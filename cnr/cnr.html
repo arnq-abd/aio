@@ -542,5 +542,15 @@ function resetRoutine() {
 
 
   </script>
+ <script>
+    document.addEventListener('keydown', function(event) {
+        // 'Escape' বা 'Esc' বাটন চেক করা হচ্ছে
+        if (event.key === "Escape") {
+            // এই কমান্ডটি বর্তমান ট্যাবেই নতুন লিংক ওপেন করবে
+            window.location.href = "https://arnq-abd.github.io/aio/aio.html"; 
+        }
+    });
+ </script>
 </body>
 </html>
+
