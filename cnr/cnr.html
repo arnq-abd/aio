@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <title>পরীক্ষার রুটিন নির্মাতা</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Tiro Bangla', serif;
+      background-color: #f2f2f2;
+      padding: 10px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    form label {
+      display: flex;
+      flex-direction: column;
+      font-weight: bold;
+      flex: 1 1 150px;
+      min-width: 150px;
+    }
+    input, select, button {
+      padding: 8px;
+      font-size: 16px;
+      font-family: 'Tiro Bangla', serif;
+      border: 1px solid #999;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 2px solid #333;
+      padding: 10px;
+      text-align: center;
+      font-size: 16px;
+      min-width: 100px;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    .editable-header {
+      cursor: pointer;
+    }
+    .editable-header:hover {
+      background-color: #e0e0e0;
+    }
+    .class-header {
+      background-color: #e6f3ff;
+      font-weight: bold;
+    }
+    /* নতুন Row এর জন্য একই রঙ ও স্টাইল */
+    .class-subheader {
+      background-color: #e6f3ff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .editable-cell {
+      cursor: pointer;
+      position: relative;
+    }
+    .editable-cell:hover {
+      background-color: #f9f9f9;
+    }
+    .download-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .download-buttons button {
+      margin: 5px;
+    }
+    @media screen and (max-width: 800px) {
+      form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      form label {
+        width: 100%;
+      }
+      th, td {
+        font-size: 14px;
+        padding: 8px;
+        min-width: 80px;
+      }
+      table {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>পরীক্ষার রুটিন নির্মাতা</h1>
+
+  <form id="routineForm">
+    <label>জামাত:
+      <select id="class" required>
+        <option value="">জামাত নির্বাচন করুন</option>
+        <option>শিশু</option>
+        <option>প্রথম</option>
+        <option>দ্বিতীয়</option>
+        <option>তৃতীয়</option>
+      </select>
+    </label>
+
+    <label>দিন:
+      <select id="period" required>
+        <option value="">দিন নির্বাচন করুন</option>
+        <option>১ম দিন</option>
+        <option>২য় দিন</option>
+        <option>৩য় দিন</option>
+        <option>৪র্থ দিন</option>
+        <option>৫ম দিন</option>
+        <option>৬ষ্ঠ দিন</option>
+        <option>৭ম দিন</option>
+      </select>
+    </label>
+
+    <label>বিষয়:
+      <select id="subjectSelect" required>
+        <option value="">বিষয় নির্বাচন করুন</option>
+        <option>আরবী লেখা</option>
+        <option>ইংরেজি</option>
+        <option>গণিত</option>
+        <option>বাংলা</option>
+        <option>হাদিস</option>
+        <option>কুরআন</option>
+        <option>ইসলামিয়াত</option>
+        <option value="add-new">➕ নতুন বিষয় যোগ করুন...</option>
+      </select>
+    </label>
+
+    <label id="newSubjectLabel" style="display:none;">নতুন বিষয়:
+      <input type="text" id="newSubjectInput" placeholder="নতুন বিষয় লিখুন" />
+    </label>
+
+    <label>সময়:
+      <select id="timeSelect">
+        <option value="">সময় নির্বাচন</option>
+        <option>বিকাল</option>
+        <option>❌</option>
+      </select>
+    </label>
+
+    <button type="submit">বিষয় যোগ করুন</button>
+  </form>
+
+  <div id="routineContainer">
+    <table id="routineTable">
+      <thead>
+        <tr>
+          <th>দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">১ম দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">২য় দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">৩য় দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">৪র্থ দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">৫ম দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">৬ষ্ঠ দিন</th>
+          <th class="editable-header" onclick="editHeader(this)">৭ম দিন</th>
+        </tr>
+         <th>তারিখ</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+        </tr>
+         <th>বার</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+          <th class="editable-header" onclick="editHeader(this)">-</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="class-header">শিশু</td>
+          <td class="editable-cell" data-class="শিশু" data-period="১ম দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="২য় দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="৩য় দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="৪র্থ দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="৫ম দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="৬ষ্ঠ দিন"></td>
+          <td class="editable-cell" data-class="শিশু" data-period="৭ম দিন"></td>
+        </tr>
+        <tr>
+          <td class="class-header">প্রথম</td>
+          <td class="editable-cell" data-class="প্রথম" data-period="১ম দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="২য় দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="৩য় দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="৪র্থ দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="৫ম দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="৬ষ্ঠ দিন"></td>
+          <td class="editable-cell" data-class="প্রথম" data-period="৭ম দিন"></td>
+        </tr>
+        <tr>
+          <td class="class-header">দ্বিতীয়</td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="১ম দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="২য় দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="৩য় দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="৪র্থ দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="৫ম দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="৬ষ্ঠ দিন"></td>
+          <td class="editable-cell" data-class="দ্বিতীয়" data-period="৭ম দিন"></td>
+        </tr>
+        <tr>
+          <td class="class-header">তৃতীয়</td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="১ম দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="২য় দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="৩য় দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="৪র্থ দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="৫ম দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="৬ষ্ঠ দিন"></td>
+          <td class="editable-cell" data-class="তৃতীয়" data-period="৭ম দিন"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="download-buttons">
+    <button onclick="downloadAsImage()">📸 JPG ডাউনলোড</button>
+    <button onclick="downloadAsPDF()">📄 PDF ডাউনলোড</button>
+    <button onclick="clearAll()">🗑️ সব মুছুন</button>
+  <button onclick="resetRoutine()">🔄 রিসেট করুন</button> <!-- ✅ নতুন বাটন -->
+</div>
+
+  </div>
+
+  <script>
+    let routineData = {
+      headers: ['১ম দিন', '২য় দিন', '৩য় দিন', '৪র্থ দিন', '৫ম দিন', '৬ষ্ঠ দিন', '৭ম দিন'],
+      subjects: ['আরবী লেখা', 'ইংরেজি', 'গণিত', 'বাংলা', 'হাদিস', 'কুরআন', 'ইসলামিয়াত'],
+      cellData: {},
+      // নতুন: dateBarData - জামাতের নিচের row এর ডাটা
+      dateBarData: ['১', '২', '৩', '৪', '৫', '৬', '৭']
+    };
+
+    function loadData() {
+      const stored = localStorage.getItem('routineData');
+      if (stored) {
+        routineData = JSON.parse(stored);
+      }
+
+      // হেডার লোড
+      const headers = document.querySelectorAll('.editable-header');
+      headers.forEach((header, index) => {
+        if (routineData.headers[index]) {
+          header.textContent = routineData.headers[index];
+        }
+      });
+
+      // subjectSelect লোড
+      const subjectSelect = document.getElementById('subjectSelect');
+      const addNewOption = subjectSelect.querySelector('option[value="add-new"]');
+      subjectSelect.innerHTML = '<option value="">বিষয় নির্বাচন করুন</option>';
+      routineData.subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.textContent = subject;
+        subjectSelect.appendChild(option);
+      });
+      if(addNewOption) subjectSelect.appendChild(addNewOption);
+
+      // cellData লোড
+      Object.keys(routineData.cellData).forEach(key => {
+        const data = routineData.cellData[key];
+        const cell = document.querySelector(`[data-class="${data.class}"][data-period="${data.period}"]`);
+        if (cell) {
+          cell.textContent = data.content;
+          cell.style.backgroundColor = data.bgColor || '';
+        }
+      });
+
+      // নতুন: dateBarData লোড
+      const dateBarCells = document.querySelectorAll('#dateBarRow td.editable-cell');
+      dateBarCells.forEach((cell, i) => {
+        if (routineData.dateBarData[i]) {
+          cell.textContent = routineData.dateBarData[i];
+        }
+      });
+    }
+
+    function saveData() {
+      // cellData সেভ
+      routineData.cellData = {};
+      document.querySelectorAll('.editable-cell').forEach(cell => {
+        const className = cell.getAttribute('data-class');
+        const period = cell.getAttribute('data-period');
+        const content = cell.textContent.trim();
+        if (className && period) {
+          const key = `${className}-${period}`;
+          if (content) {
+            routineData.cellData[key] = {
+              class: className,
+              period: period,
+              content: content,
+              bgColor: cell.style.backgroundColor
+            };
+          }
+        }
+      });
+
+      // header সেভ
+      const headers = document.querySelectorAll('.editable-header');
+      headers.forEach((header, index) => {
+        routineData.headers[index] = header.textContent;
+      });
+
+      // নতুন: dateBarData সেভ
+      const dateBarCells = document.querySelectorAll('#dateBarRow td.editable-cell');
+      routineData.dateBarData = [];
+      dateBarCells.forEach(cell => {
+        routineData.dateBarData.push(cell.textContent.trim());
+      });
+
+      localStorage.setItem('routineData', JSON.stringify(routineData));
+    }
+
+    const subjectSelect = document.getElementById('subjectSelect');
+    const newSubjectLabel = document.getElementById('newSubjectLabel');
+    const newSubjectInput = document.getElementById('newSubjectInput');
+
+    subjectSelect.addEventListener('change', function () {
+      if (this.value === 'add-new') {
+        newSubjectLabel.style.display = 'block';
+        newSubjectInput.required = true;
+      } else {
+        newSubjectLabel.style.display = 'none';
+        newSubjectInput.required = false;
+      }
+    });
+
+    function editHeader(headerElement) {
+      const currentText = headerElement.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentText;
+      input.style.width = '100%';
+      input.style.border = 'none';
+      input.style.background = 'transparent';
+      input.style.fontSize = 'inherit';
+      input.style.textAlign = 'center';
+      input.style.fontFamily = 'inherit';
+      input.style.fontWeight = 'bold';
+
+      headerElement.innerHTML = '';
+      headerElement.appendChild(input);
+      input.focus();
+      input.select();
+
+      const saveValue = () => {
+        const newText = input.value.trim() || currentText;
+        headerElement.textContent = newText;
+
+        // পিরিয়ড সিলেক্ট এর অপশন আপডেট
+        const periodSelect = document.getElementById('period');
+        const options = periodSelect.querySelectorAll('option');
+        options.forEach(option => {
+          if (option.textContent === currentText) {
+            option.textContent = newText;
+            option.value = newText;
+          }
+        });
+
+        // ডেটা-অ্যাট্রিবিউট পিরিয়ড আপডেট
+        document.querySelectorAll(`[data-period="${currentText}"]`).forEach(cell => {
+          cell.setAttribute('data-period', newText);
+        });
+
+        saveData();
+      };
+
+      input.addEventListener('blur', saveValue);
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') saveValue();
+      });
+    }
+
+    // নতুন: জামাত Row এর editable cell গুলোর জন্য এডিট ইভেন্ট
+    document.querySelectorAll('#dateBarRow td.editable-cell').forEach(cell => {
+      cell.addEventListener('blur', saveData);
+      // ইনপুটের জন্য ক্লিক করলে ইতোমধ্যে contenteditable=true আছে, তাই আলাদা ইভেন্ট দরকার নেই
+    });
+
+    document.getElementById('routineForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const timeSlot = document.getElementById('timeSelect').value;
+      const className = document.getElementById('class').value;
+      const period = document.getElementById('period').value;
+      let subject = subjectSelect.value;
+
+      // সময় ড্রপডাউন required নয়, তাই শুধু জামাত এবং দিন চেক করবো
+      if (!className || !period) {
+        alert('অনুগ্রহ করে জামাত এবং দিন নির্বাচন করুন।');
+        return;
+      }
+
+      if (subject === 'add-new') {
+        subject = newSubjectInput.value.trim();
+        if (!subject) {
+          alert('অনুগ্রহ করে নতুন বিষয়ের নাম লিখুন।');
+          return;
+        }
+        const newOption = document.createElement('option');
+        newOption.textContent = subject;
+        subjectSelect.insertBefore(newOption, subjectSelect.querySelector('option[value="add-new"]'));
+        subjectSelect.value = subject;
+        if (!routineData.subjects.includes(subject)) {
+          routineData.subjects.push(subject);
+        }
+      }
+
+      const targetCell = document.querySelector(`[data-class="${className}"][data-period="${period}"]`);
+      if (targetCell) {
+        if (timeSlot === '❌') {
+          targetCell.textContent = '❌';
+          targetCell.style.backgroundColor = '#ffebee';
+        } else if(timeSlot) {
+          targetCell.textContent = `${subject} (${timeSlot})`;
+          targetCell.style.backgroundColor = '#e8f5e8';
+        } else {
+          // সময় সিলেক্ট না করা থাকলে শুধু বিষয় দেখাবে
+          targetCell.textContent = subject;
+          targetCell.style.backgroundColor = '#e8f5e8';
+        }
+      }
+
+      this.reset();
+      newSubjectLabel.style.display = 'none';
+      saveData();
+    });
+
+    // editable-cell এর জন্য ক্লিক করে ইনপুট এডিটিং (body table cells except dateBarRow)
+    document.querySelectorAll('.editable-cell').forEach(cell => {
+      // নতুন: শুধু যদি contenteditable=false থাকে, তখনই ক্লিক ইভেন্ট
+      if(!cell.isContentEditable) {
+        cell.addEventListener('click', function() {
+          const currentText = this.textContent;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = currentText;
+          input.style.width = '100%';
+          input.style.border = 'none';
+          input.style.background = 'transparent';
+          input.style.fontSize = 'inherit';
+          input.style.textAlign = 'center';
+          input.style.fontFamily = 'inherit';
+
+          this.innerHTML = '';
+          this.appendChild(input);
+          input.focus();
+
+          const saveValue = () => {
+            this.textContent = input.value;
+            this.style.backgroundColor = input.value.trim() ? '#e8f5e8' : '';
+            saveData();
+          };
+
+          input.addEventListener('blur', saveValue);
+          input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') saveValue();
+          });
+        });
+      }
+    });
+
+    function downloadAsImage() {
+      html2canvas(document.getElementById("routineContainer")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "routine.jpg";
+        link.href = canvas.toDataURL("image/jpeg");
+        link.click();
+      });
+    }
+
+    function downloadAsPDF() {
+      html2canvas(document.getElementById("routineContainer")).then(canvas => {
+        const imgData = canvas.toDataURL("image/jpeg");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        const width = pdf.internal.pageSize.getWidth();
+        const height = (canvas.height * width) / canvas.width;
+        pdf.addImage(imgData, "JPEG", 0, 10, width, height);
+        pdf.save("routine.pdf");
+      });
+    }
+
+    function clearAll() {
+      if (confirm('আপনি কি সব তথ্য মুছে ফেলতে চান?')) {
+        document.querySelectorAll('.editable-cell').forEach(cell => {
+          cell.textContent = '';
+          cell.style.backgroundColor = '';
+        });
+        routineData.cellData = {};
+        routineData.dateBarData = ['', '', '', '', '', '', ''];
+        saveData();
+      }
+    }
+
+    loadData();
+
+function resetRoutine() {
+  if (confirm('আপনি কি সম্পূর্ণ রিসেট করতে চান? সমস্ত তথ্য মুছে যাবে।')) {
+    localStorage.removeItem('routineData');
+    location.reload();
+  }
+}
+
+
+  </script>
+</body>
+</html>

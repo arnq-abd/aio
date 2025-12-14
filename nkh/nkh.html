@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>নোয়াখালী'তে</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap" rel="stylesheet">
+
+    <style>
+        /* Apply the font to the entire page and set a fallback */
+        body {
+            font-family: 'Tiro Bangla', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .shironam {
+            text-align: center;
+        }
+
+        #fullscreen-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: white;
+            font-size: 32px;
+
+            /* Center the content using Flexbox */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 9999;
+            text-align: center;
+
+            /* For smooth fade in/out effect */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        /* Class to show the popup */
+        #fullscreen-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Slideshow container initially hidden */
+        .slideshow-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Class to show the slideshow when ready */
+        .slideshow-container.ready {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ========== স্লাইডশো স্টাইল ========== */
+
+        :root {
+            --slide-width: 400px;
+            /* প্রস্থ পরিবর্তন করুন */
+            --slide-height: 100px;
+            /* উচ্চতা পরিবর্তন করুন */
+        }
+
+        .slideshow-container {
+            width: var(--slide-width) !important;
+            height: var(--slide-height) !important;
+            position: relative;
+            margin: auto;
+            overflow: hidden;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transition: opacity 1s ease;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: .4
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        /* মোবাইল রেস্পন্সিভ */
+        @media (max-width: 900px) {
+            .slideshow-container {
+                width: 95vw;
+                height: calc(95vw * 9/16);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="fullscreen-popup">
+        নোয়াখালী'তে 💐<br>আপনাকে স্বাগতম<br>🫲 আসসালামু আলাইকুম।
+    </div>
+
+    <h1 class="shironam">নোয়াখালী'তে</h1>
+    <h3 class="shironam">সম্ভাবনাময় প্রযুক্তির ব্যবহার</h3>
+
+    <a href="#"
+        style="background-color: #28a745; color: white; display: block; width: 100%; padding: 10px 0; text-decoration: none; border-radius: 0; font-weight: 600; text-align: center;">
+        বিজ্ঞাপন দিতে এখানে ক্লিক করুন
+    </a>
+
+    <div
+        style="text-align: center; display: flex; flex-wrap: nowrap; justify-content: center; gap: 10px; padding: 10px; overflow-x: auto;">
+
+        <a href="https://example.com/blue"
+            style="flex: 1 0 auto; min-width: fit-content; background-color: #3498db; color: white; padding: 9px 20px; text-decoration: none; border-radius: 5px; margin: 0; white-space: nowrap;">
+            নতুন শপিং
+        </a>
+
+        <a href="https://example.com/red"
+            style="flex: 1 0 auto; min-width: fit-content; background-color: #e74c3c; color: white; padding: 9px 15px; text-decoration: none; border-radius: 5px; margin: 0; white-space: nowrap;">
+            পুরাতন কেনাকাটা
+        </a>
+
+        <a href="https://example.com/green"
+            style="flex: 1 0 auto; min-width: fit-content; background-color: orange; color: black; padding: 9px 20px; text-decoration: none; border-radius: 5px; margin: 0; white-space: nowrap;">
+            অবসর সময়ের কাজ
+        </a>
+
+    </div>
+
+    <!-- ========== স্লাইডশো HTML ========== -->
+    <div class="slideshow-container">
+        <!-- Slide 1 -->
+        <div class="slide fade">
+            <img src="https://picsum.photos/id/1018/1600/900" alt="Nature Image 1">
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide fade">
+            <img src="https://picsum.photos/id/1015/1200/800" alt="Nature Image 2">
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide fade">
+            <img src="https://picsum.photos/id/1019/1920/1080" alt="Nature Image 3">
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide fade">
+            <img src="https://picsum.photos/id/1016/800/600" alt="Nature Image 4">
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide fade">
+            <img src="https://picsum.photos/id/1013/1600/1200" alt="Nature Image 5">
+        </div>
+    </div>
+
+    <script>
+        // ========== স্লাইডশো স্ক্রিপ্ট ==========
+        const slideInterval = 2000; // সময় ব্যবধান মিলিসেকেন্ডে (2000 = 2 সেকেন্ড)
+
+        // Function to check if all images are loaded
+        function checkAllImagesLoaded() {
+            const slideshowContainer = document.querySelector('.slideshow-container');
+            const images = slideshowContainer.querySelectorAll('img');
+            let loadedCount = 0;
+
+            images.forEach(img => {
+                if (img.complete) {
+                    loadedCount++;
+                } else {
+                    img.addEventListener('load', () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                            // All images loaded, show slideshow
+                            slideshowContainer.classList.add('ready');
+                            startSlideshow();
+                        }
+                    });
+                }
+            });
+
+            // If all images were already loaded
+            if (loadedCount === images.length) {
+                slideshowContainer.classList.add('ready');
+                startSlideshow();
+            }
+        }
+
+        // Function to start the slideshow
+        function startSlideshow() {
+            let slideIndex = 0;
+            showSlides();
+
+            function showSlides() {
+                let slides = document.getElementsByClassName("slide");
+
+                for (let i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+
+                slideIndex++;
+
+                if (slideIndex > slides.length) {
+                    slideIndex = 1;
+                }
+
+                slides[slideIndex - 1].style.display = "block";
+
+                setTimeout(showSlides, slideInterval);
+            }
+        }
+
+        // Function to check if popup should be shown
+        function shouldShowPopup() {
+            const lastPopupDate = localStorage.getItem('lastPopupDate');
+            const today = new Date().toDateString();
+
+            // If never shown before or last shown on a different day
+            if (!lastPopupDate || lastPopupDate !== today) {
+                localStorage.setItem('lastPopupDate', today);
+                return true;
+            }
+            return false;
+        }
+
+        // Run when DOM is loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            const popup = document.getElementById("fullscreen-popup");
+
+            // Check if popup should be shown
+            if (shouldShowPopup()) {
+                // Show the popup after 500ms
+                setTimeout(function () {
+                    popup.classList.add("show");
+                }, 500);
+
+                // Hide the popup after 3000ms (3 seconds)
+                setTimeout(function () {
+                    popup.classList.remove("show");
+                }, 3000);
+            }
+
+            // Start checking images
+            checkAllImagesLoaded();
+        });
+    </script><br>
+
+    <marquee behavior="scroll" direction="left" scrollamount="5"
+        style="color: white; font-size: 15px; font-weight: 500; background-color: grey; padding: 7px; border-radius: 5px;">
+        আমাদের এই ওয়েবসাইটের কাজ এখনো চলমান / নির্মাণাধীন রয়েছে - অনুগ্রহপূর্বক কিছুদিন পর আবার ভিজিট করুন . . .
+    </marquee>
+    <script>
+        document.addEventListener('keydown', function (event) {
+            // 'Escape' বা 'Esc' বাটন চেক করা হচ্ছে
+            if (event.key === "Escape") {
+                // এই কমান্ডটি বর্তমান ট্যাবেই নতুন লিংক ওপেন করবে
+                window.location.href = "../aio.html";
+            }
+        });
+    </script>
+</body>
+
+</html>

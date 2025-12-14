@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aPowerful Weapon - HTML Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        body,
+        button,
+        input,
+        h1,
+        h2,
+        h3,
+        p,
+        span,
+        div,
+        textarea,
+        select {
+            font-family: 'Tiro Bangla', serif;
+        }
+
+        .dark {
+            background-color: #000000;
+            color: #e2e8f0;
+        }
+
+        .dark .bg-gray-100 {
+            background-color: #000000;
+        }
+
+        .dark .bg-white {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+
+        .dark .text-gray-600 {
+            color: #a0aec0;
+        }
+
+        .dark .border-gray-300 {
+            border-color: #374151;
+        }
+
+        .dark input,
+        .dark textarea,
+        .dark select {
+            background-color: #374151;
+            color: #e2e8f0;
+        }
+
+        .dark .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.45);
+        }
+
+        /* === Title Color Fix === */
+        header h1 {
+            color: #111827;
+        }
+
+        .dark header h1 {
+            color: #e2e8f0;
+        }
+
+        #output-frame {
+            width: 100%;
+            border: none;
+            transition: height 0.2s;
+        }
+
+        .file-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .dark .file-btn.active {
+            background-color: #60a5fa;
+            color: #111827;
+            border-color: #60a5fa;
+        }
+
+        [data-role="user"] .admin-access,
+        [data-role="sub-admin"] .admin-access {
+            display: none !important;
+        }
+
+        [data-role="user"] .admin-only,
+        [data-role="sub-admin"] .admin-only {
+            display: none !important;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #changelog-popover {
+            position: absolute;
+            z-index: 60;
+            max-width: 250px;
+            word-wrap: break-word;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Admin Panel Tab styles */
+        .admin-tab-btn {
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .admin-tab-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .dark .admin-tab-btn.active {
+            background-color: #818cf8;
+            color: #111827;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 transition-colors duration-300">
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-sm dark:bg-gray-800">
+            <h3 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">লগইন করুন</h3>
+            <div class="space-y-4">
+                <input type="text" id="login-id" placeholder="ইউজার আইডি"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <input type="password" id="login-password" placeholder="পাসওয়ার্ড"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <button id="login-btn"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">লগইন
+                    (Enter)</button>
+                <p id="login-error" class="text-red-500 text-sm text-center h-4"></p>
+                <div class="text-center">
+                    <button id="user-reset-link" class="text-sm text-blue-500 hover:underline">আইডি/পাসওয়ার্ড
+                        রিসেট</button>
+                    <span class="text-gray-400 mx-2">|</span>
+                    <button id="admin-forgot-password-link" class="text-sm text-blue-500 hover:underline">অ্যাডমিন
+                        রিকভারি</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Recovery Modal -->
+    <div id="admin-recovery-modal"
+        class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">অ্যাডমিন পাসওয়ার্ড পুনরুদ্ধার</h3>
+            <p class="text-sm text-gray-600 mb-4">নিরাপত্তা প্রশ্নগুলোর উত্তর দিন।</p>
+            <div class="space-y-3">
+                <div>
+                    <label id="sec-q1-label" class="text-sm font-semibold text-gray-700 dark:text-gray-300"></label>
+                    <input type="text" id="sec-q1-ans" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label id="sec-q2-label" class="text-sm font-semibold text-gray-700 dark:text-gray-300"></label>
+                    <input type="text" id="sec-q2-ans" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label id="sec-q3-label" class="text-sm font-semibold text-gray-700 dark:text-gray-300"></label>
+                    <input type="text" id="sec-q3-ans" class="w-full mt-1 px-3 py-2 border rounded-lg">
+                </div>
+                <div id="admin-new-password-container" class="hidden space-y-2">
+                    <input type="password" id="admin-recovery-new-pass" placeholder="নতুন পাসওয়ার্ড দিন"
+                        class="w-full px-3 py-2 border rounded-lg">
+                    <button id="admin-reset-pass-btn"
+                        class="w-full mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg">পাসওয়ার্ড রিসেট করুন
+                        (Enter)</button>
+                </div>
+            </div>
+            <p id="admin-recovery-error" class="text-red-500 text-sm text-center h-4 mt-2"></p>
+            <div class="flex justify-between mt-4">
+                <button id="admin-verify-answers-btn"
+                    class="w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">উত্তর যাচাই করুন
+                    (Enter)</button>
+                <button id="close-admin-recovery-modal-btn"
+                    class="w-auto bg-red-500 text-white font-bold py-2 px-4 rounded-lg">বন্ধ করুন (Backspace)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User/Sub-admin Recovery Modal -->
+    <div id="user-recovery-modal"
+        class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">আইডি/পাসওয়ার্ড পুনরুদ্ধার</h3>
+            <div class="space-y-3">
+                <input type="text" id="user-rec-mobile" placeholder="মোবাইল নাম্বার"
+                    class="w-full mt-1 px-3 py-2 border rounded-lg">
+                <input type="text" id="user-rec-membercode" placeholder="সদস্য কোড"
+                    class="w-full mt-1 px-3 py-2 border rounded-lg">
+                <div id="user-rec-found-container" class="hidden p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                    <p class="text-sm text-gray-800 dark:text-gray-200">আপনার ইউজার আইডি: <strong
+                            id="user-rec-found-id"></strong></p>
+                    <input type="password" id="user-rec-new-pass" placeholder="নতুন পাসওয়ার্ড দিন"
+                        class="w-full mt-2 px-3 py-2 border rounded-lg">
+                    <button id="user-reset-pass-btn"
+                        class="w-full mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-lg">পাসওয়ার্ড রিসেট করুন
+                        (Enter)</button>
+                </div>
+            </div>
+            <p id="user-recovery-error" class="text-red-500 text-sm text-center h-4 mt-2"></p>
+            <div class="flex justify-between mt-4">
+                <button id="user-verify-info-btn"
+                    class="w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">তথ্য যাচাই করুন
+                    (Enter)</button>
+                <button id="close-user-recovery-modal-btn"
+                    class="w-auto bg-red-500 text-white font-bold py-2 px-4 rounded-lg">বন্ধ করুন (Backspace)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="min-h-screen flex-col p-4 sm:p-6 lg:p-8 hidden">
+        <header class="flex justify-between items-center mb-6 flex-shrink-0">
+            <div class="w-1/3">
+                <button id="admin-panel-btn"
+                    class="admin-access bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">অ্যাডমিন
+                    প্যানেল</button>
+            </div>
+            <h1 class="w-1/3 text-center text-2xl sm:text-3xl font-bold">aPowerful Weapon</h1>
+            <div class="w-1/3 flex justify-end items-center space-x-4">
+                <span id="user-greeting" class="text-sm text-gray-700 dark:text-gray-300"></span>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">ডার্ক মোড</span>
+                    <label for="dark-mode-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="dark-mode-toggle" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-300 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+                </div>
+                <button id="feedback-btn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">ফিডব্যাক</button>
+                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">লগ
+                    আউট</button>
+            </div>
+        </header>
+
+        <div class="admin-access bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-6 flex-shrink-0">
+            <div class="flex flex-wrap items-center gap-4 w-full">
+                <input type="text" id="file-title" placeholder="ফাইলের নাম দিন"
+                    class="flex-grow px-4 py-2 border rounded-lg min-w-[200px]">
+                <input type="file" id="html-file-input" accept=".html,.htm"
+                    class="flex-grow text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300">
+                <button id="upload-btn"
+                    class="w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">আপলোড
+                    করুন</button>
+            </div>
+        </div>
+
+        <main class="flex flex-col flex-grow">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6 flex-shrink-0">
+                <div id="buttons-container" class="flex items-center space-x-3 overflow-x-auto pb-2">
+                    <p id="no-files-message" class="text-gray-500">কোনো ফাইল নেই।</p>
+                </div>
+            </div>
+            <iframe id="output-frame" title="HTML Output"
+                class="bg-white dark:bg-gray-700 rounded-lg shadow-lg w-full"></iframe>
+        </main>
+    </div>
+
+    <!-- Edit File Modal (Admin Only) -->
+    <div id="edit-file-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-40 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">ফাইল এডিট করুন (Alt+E)</h3>
+            <div class="space-y-4">
+                <input type="text" id="edit-file-title" placeholder="ফাইলের নতুন নাম"
+                    class="w-full p-2 border rounded-lg">
+                <input type="text" id="edit-file-version" placeholder="নতুন ভার্সন (e.g., v1.2)"
+                    class="w-full p-2 border rounded-lg">
+                <textarea id="edit-file-changelog" placeholder="নতুন ভার্সনের পরিবর্তনসমূহ লিখুন..."
+                    class="w-full p-2 border rounded-lg h-24"></textarea>
+            </div>
+            <p id="edit-file-error" class="text-red-500 text-sm text-center h-4 mt-2"></p>
+            <div class="flex justify-end space-x-3 mt-4">
+                <button id="close-edit-file-modal-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">বাতিল (Backspace)</button>
+                <button id="save-file-changes-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg">সেভ
+                    করুন (Enter)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Editor Modal (Admin Only) -->
+    <div id="code-editor-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-40 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-4xl h-5/6 flex flex-col">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">কোড এডিটর</h3>
+            <textarea id="code-editor" class="w-full flex-grow p-2 border rounded-lg font-mono text-sm"
+                spellcheck="false"></textarea>
+            <div class="flex justify-end space-x-3 mt-4">
+                <button id="close-code-editor-modal-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">বাতিল (Backspace)</button>
+                <button id="save-code-changes-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg">সেভ
+                    করুন (Enter / Alt+S)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version Notification Modal -->
+    <div id="version-notification-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">নতুন আপডেট!</h3>
+            <p id="version-notification-text" class="text-gray-600 dark:text-gray-300"></p>
+            <div id="version-changelog-container" class="hidden mt-4">
+                <hr class="my-3 border-gray-300 dark:border-gray-600">
+                <div class="text-left">
+                    <p class="font-semibold mb-1 text-gray-700 dark:text-gray-200">নতুন ভার্সনের পরিবর্তনসমূহ:</p>
+                    <p id="version-notification-changelog"
+                        class="text-sm text-gray-600 dark:text-gray-400 max-h-32 overflow-y-auto bg-gray-100 dark:bg-gray-700 p-2 rounded">
+                    </p>
+                </div>
+            </div>
+            <button id="close-version-notification-btn"
+                class="mt-6 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">ঠিক আছে (Enter)</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-management-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-40 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-5xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">অ্যাডমিন প্যানেল</h3>
+                <div class="flex border border-gray-300 dark:border-gray-600 rounded-lg p-1 space-x-1">
+                    <button id="admin-tab-users" class="admin-tab-btn px-4 py-1 rounded-md text-sm font-semibold">ইউজার
+                        ম্যানেজমেন্ট</button>
+                    <button id="admin-tab-feedback"
+                        class="admin-tab-btn px-4 py-1 rounded-md text-sm font-semibold relative">
+                        ফিডব্যাক
+                        <span id="unread-feedback-bubble"
+                            class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="admin-users-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">নতুন ইউজার তৈরি করুন</h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                <input type="text" id="new-user-id" placeholder="ইউজার আইডি" class="p-2 border rounded">
+                                <input type="text" id="new-user-password" placeholder="পাসওয়ার্ড"
+                                    class="p-2 border rounded">
+                                <input type="text" id="new-user-mobile" placeholder="মোবাইল নাম্বার"
+                                    class="p-2 border rounded">
+                                <input type="text" id="new-user-membercode" placeholder="সদস্য কোড"
+                                    class="p-2 border rounded">
+                                <select id="new-user-role" class="p-2 border rounded">
+                                    <option value="user">ইউজার</option>
+                                    <option value="sub-admin">সাব-অ্যাডমিন</option>
+                                    <option value="admin">অ্যাডমিন</option>
+                                </select>
+                            </div>
+                            <button id="create-user-btn"
+                                class="mt-3 bg-green-500 text-white font-bold py-2 px-4 rounded-lg">ইউজার তৈরি করুন
+                                (Enter)</button>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">পাসওয়ার্ড পরিবর্তন করুন
+                            </h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                <select id="change-pass-user-select" class="p-2 border rounded"></select>
+                                <input type="text" id="change-pass-new-pass" placeholder="নতুন পাসওয়ার্ড"
+                                    class="p-2 border rounded">
+                            </div>
+                            <button id="change-pass-btn"
+                                class="mt-3 bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg">পাসওয়ার্ড পরিবর্তন
+                                করুন (Enter)</button>
+                        </div>
+                        <p id="admin-msg" class="text-sm text-center h-4"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">ইউজারের তালিকা</h4>
+                        <div id="user-list-container"
+                            class="h-80 overflow-y-auto border rounded p-2 bg-gray-50 dark:bg-gray-900"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-feedback-content" class="hidden">
+                <h4 class="font-semibold text-gray-700 dark:text-gray-200 mb-2">ব্যবহারকারীদের ফিডব্যাক</h4>
+                <div id="feedback-list-container"
+                    class="h-[450px] overflow-y-auto space-y-3 p-2 border rounded bg-gray-50 dark:bg-gray-900"></div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button id="close-admin-modal-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg">বন্ধ
+                    করুন (Backspace)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Submission Modal -->
+    <div id="feedback-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-40 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg">
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">মতামত দিন</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">ফাইল: <strong id="feedback-file-name"></strong></p>
+            <textarea id="feedback-textarea" placeholder="আপনার মতামত, অভিযোগ বা পরামর্শ এখানে লিখুন..."
+                class="w-full p-2 border rounded-lg h-32"></textarea>
+            <p id="feedback-error" class="text-red-500 text-sm h-4 mt-1"></p>
+            <div class="flex justify-end space-x-3 mt-4">
+                <button id="close-feedback-modal-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">বাতিল</button>
+                <button id="submit-feedback-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg">জমা
+                    দিন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Feedback Modal (Admin Only) -->
+    <div id="edit-feedback-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">ফিডব্যাক এডিট করুন</h3>
+            <textarea id="edit-feedback-textarea" class="w-full p-2 border rounded-lg h-32"></textarea>
+            <p id="edit-feedback-error" class="text-red-500 text-sm h-4 mt-1"></p>
+            <div class="flex justify-end space-x-3 mt-4">
+                <button id="close-edit-feedback-modal-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">বাতিল</button>
+                <button id="save-feedback-changes-btn"
+                    class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg">সেভ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin New Feedback Notification Modal -->
+    <div id="feedback-notification-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md text-center">
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">নতুন ফিডব্যাক এসেছে!</h3>
+            <p id="feedback-notification-text" class="text-gray-600 dark:text-gray-300 mb-5"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="feedback-notification-close-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-5 rounded-lg">পরে দেখব</button>
+                <button id="feedback-notification-view-btn"
+                    class="bg-blue-500 text-white font-bold py-2 px-5 rounded-lg">ফিডব্যাক দেখুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Confirm Modal -->
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <h3 id="confirm-modal-title" class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">আপনি কি
+                নিশ্চিত?</h3>
+            <p id="confirm-modal-text" class="text-gray-600 dark:text-gray-300 mb-6"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-modal-cancel-btn"
+                    class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg">বাতিল (Backspace)</button>
+                <button id="confirm-modal-ok-btn" class="bg-red-500 text-white font-bold py-2 px-6 rounded-lg">নিশ্চিত
+                    (Enter)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog Popover -->
+    <div id="changelog-popover"
+        class="hidden bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md p-3 text-sm text-gray-800 dark:text-gray-200">
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DB and State
+            let db = { users: [], files: [], feedback: [] };
+            let currentUser = null;
+            let activeFileId = null;
+            let fileToEdit = null;
+            let feedbackToEdit = null;
+            let confirmCallback = null;
+            const DB_KEY = 'aPowerfulWeaponDB';
+            const SESSION_KEY = 'aPowerfulWeaponSession';
+            const VIEWED_VERSIONS_KEY = 'aPowerfulWeaponViewedVersions';
+
+            const SECURITY_QUESTIONS = [
+                { q: "আপনার প্রথম পোষা প্রাণীর নাম কি?", a: "tom" },
+                { q: "আপনার জন্মস্থান কোন শহরে?", a: "dhaka" },
+                { q: "আপনার প্রিয় বই কোনটি?", a: "gitanjali" }
+            ];
+
+            // UI Elements
+            const loginModal = document.getElementById('login-modal');
+            const appContainer = document.getElementById('app-container');
+            const loginBtn = document.getElementById('login-btn');
+            const loginIdInput = document.getElementById('login-id');
+            const loginPasswordInput = document.getElementById('login-password');
+            const loginError = document.getElementById('login-error');
+            const logoutBtn = document.getElementById('logout-btn');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const userGreeting = document.getElementById('user-greeting');
+            const uploadBtn = document.getElementById('upload-btn');
+            const fileTitleInput = document.getElementById('file-title');
+            const htmlFileInput = document.getElementById('html-file-input');
+            const buttonsContainer = document.getElementById('buttons-container');
+            const noFilesMessage = document.getElementById('no-files-message');
+            const outputFrame = document.getElementById('output-frame');
+
+            const adminRecoveryModal = document.getElementById('admin-recovery-modal');
+            const adminForgotPwdLink = document.getElementById('admin-forgot-password-link');
+            const closeAdminRecoveryModalBtn = document.getElementById('close-admin-recovery-modal-btn');
+            const adminVerifyAnswersBtn = document.getElementById('admin-verify-answers-btn');
+            const adminNewPassContainer = document.getElementById('admin-new-password-container');
+            const adminResetPassBtn = document.getElementById('admin-reset-pass-btn');
+            const adminRecoveryError = document.getElementById('admin-recovery-error');
+            const userRecoveryModal = document.getElementById('user-recovery-modal');
+            const userResetLink = document.getElementById('user-reset-link');
+            const closeUserRecoveryModalBtn = document.getElementById('close-user-recovery-modal-btn');
+            const userVerifyInfoBtn = document.getElementById('user-verify-info-btn');
+            const userRecFoundContainer = document.getElementById('user-rec-found-container');
+            const userResetPassBtn = document.getElementById('user-reset-pass-btn');
+            const userRecoveryError = document.getElementById('user-recovery-error');
+            const adminPanelBtn = document.getElementById('admin-panel-btn');
+            const adminModal = document.getElementById('admin-management-modal');
+            const closeAdminModalBtn = document.getElementById('close-admin-modal-btn');
+            const adminTabUsers = document.getElementById('admin-tab-users');
+            const adminTabFeedback = document.getElementById('admin-tab-feedback');
+            const adminUsersContent = document.getElementById('admin-users-content');
+            const adminFeedbackContent = document.getElementById('admin-feedback-content');
+            const feedbackListContainer = document.getElementById('feedback-list-container');
+            const unreadFeedbackBubble = document.getElementById('unread-feedback-bubble');
+            const createUserBtn = document.getElementById('create-user-btn');
+            const newUserIdInput = document.getElementById('new-user-id');
+            const newUserPasswordInput = document.getElementById('new-user-password');
+            const newUserMobileInput = document.getElementById('new-user-mobile');
+            const newUserMemberCodeInput = document.getElementById('new-user-membercode');
+            const newUserRoleInput = document.getElementById('new-user-role');
+            const adminMsg = document.getElementById('admin-msg');
+            const changePassUserSelect = document.getElementById('change-pass-user-select');
+            const changePassNewPassInput = document.getElementById('change-pass-new-pass');
+            const changePassBtn = document.getElementById('change-pass-btn');
+            const userListContainer = document.getElementById('user-list-container');
+            const editFileModal = document.getElementById('edit-file-modal');
+            const editFileChangelogInput = document.getElementById('edit-file-changelog');
+            const closeEditFileModalBtn = document.getElementById('close-edit-file-modal-btn');
+            const saveFileChangesBtn = document.getElementById('save-file-changes-btn');
+            const codeEditorModal = document.getElementById('code-editor-modal');
+            const codeEditor = document.getElementById('code-editor');
+            const closeCodeEditorModalBtn = document.getElementById('close-code-editor-modal-btn');
+            const saveCodeChangesBtn = document.getElementById('save-code-changes-btn');
+            const versionNotificationModal = document.getElementById('version-notification-modal');
+            const closeVersionNotificationBtn = document.getElementById('close-version-notification-btn');
+            const feedbackBtn = document.getElementById('feedback-btn');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackFileName = document.getElementById('feedback-file-name');
+            const feedbackTextarea = document.getElementById('feedback-textarea');
+            const feedbackError = document.getElementById('feedback-error');
+            const closeFeedbackModalBtn = document.getElementById('close-feedback-modal-btn');
+            const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+            const editFeedbackModal = document.getElementById('edit-feedback-modal');
+            const editFeedbackTextarea = document.getElementById('edit-feedback-textarea');
+            const closeEditFeedbackModalBtn = document.getElementById('close-edit-feedback-modal-btn');
+            const saveFeedbackChangesBtn = document.getElementById('save-feedback-changes-btn');
+            const feedbackNotificationModal = document.getElementById('feedback-notification-modal');
+            const feedbackNotificationText = document.getElementById('feedback-notification-text');
+            const feedbackNotificationCloseBtn = document.getElementById('feedback-notification-close-btn');
+            const feedbackNotificationViewBtn = document.getElementById('feedback-notification-view-btn');
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmModalText = document.getElementById('confirm-modal-text');
+            const confirmModalCancelBtn = document.getElementById('confirm-modal-cancel-btn');
+            const confirmModalOkBtn = document.getElementById('confirm-modal-ok-btn');
+            const changelogPopover = document.getElementById('changelog-popover');
+
+            function loadDatabase() {
+                const storedDb = localStorage.getItem(DB_KEY);
+                if (storedDb) {
+                    db = JSON.parse(storedDb);
+                    if (!db.feedback) db.feedback = [];
+                } else {
+                    db = {
+                        users: [{ id: 'admin', pass: 'admin', role: 'admin', mobile: '000', memberCode: '000' }],
+                        files: [],
+                        feedback: []
+                    };
+                    saveDatabase();
+                }
+            }
+            function saveDatabase() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+            function checkSession() {
+                const session = JSON.parse(localStorage.getItem(SESSION_KEY));
+                if (!session) return false;
+                const twelveHours = 12 * 60 * 60 * 1000;
+                if (Date.now() - session.timestamp > twelveHours) {
+                    logout();
+                    return false;
+                }
+                const userInDb = db.users.find(u => u.id === session.id);
+                if (userInDb) {
+                    currentUser = userInDb;
+                    return true;
+                }
+                return false;
+            }
+
+            function login() {
+                const userId = loginIdInput.value.trim();
+                const password = loginPasswordInput.value;
+                loginError.textContent = '';
+
+                const user = db.users.find(u => u.id === userId && u.pass === password);
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: user.id, timestamp: Date.now() }));
+                    showApp();
+                } else {
+                    loginError.textContent = 'ভুল ইউজার আইডি বা পাসওয়ার্ড।';
+                }
+            }
+
+            function logout() {
+                localStorage.removeItem(SESSION_KEY);
+                currentUser = null;
+                showLogin();
+            }
+
+            function showApp() {
+                loginModal.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                appContainer.classList.add('flex');
+                document.body.dataset.role = currentUser.role;
+                userGreeting.textContent = `Hi, ${currentUser.id}`; // Updated Greeting Message
+                initializeApp();
+            }
+
+            function showLogin() {
+                loginModal.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+                appContainer.classList.remove('flex');
+            }
+
+            function initializeApp() {
+                applyDarkMode();
+                updateFeedbackButtonState();
+
+                let viewedVersions = JSON.parse(localStorage.getItem(VIEWED_VERSIONS_KEY)) || {};
+                if (!db.files.some(f => f.id === activeFileId)) {
+                    activeFileId = db.files.length > 0 ? db.files[0].id : null;
+                }
+                renderButtons();
+                renderContent();
+
+                if (activeFileId) {
+                    const file = db.files.find(f => f.id === activeFileId);
+                    if (file && file.lastUpdated && file.lastUpdated > (viewedVersions[file.id] || 0)) {
+                        if (currentUser.role !== 'admin') showVersionNotification(file);
+                    }
+                }
+
+                if (currentUser.role === 'admin') {
+                    checkForUnreadFeedback();
+                }
+            }
+
+            function showVersionNotification(file) {
+                document.getElementById('version-notification-text').textContent = `"${file.title}" ফাইলটির নতুন ভার্সন (${file.version}) এসেছে।`;
+                const changelogContainer = document.getElementById('version-changelog-container');
+                const changelogEl = document.getElementById('version-notification-changelog');
+
+                if (file.changelog) {
+                    changelogEl.innerHTML = file.changelog.replace(/\n/g, '<br>');
+                    changelogContainer.classList.remove('hidden');
+                } else {
+                    changelogContainer.classList.add('hidden');
+                }
+
+                versionNotificationModal.classList.remove('hidden');
+            }
+
+            function renderButtons() {
+                buttonsContainer.innerHTML = '';
+                if (db.files.length === 0) {
+                    buttonsContainer.appendChild(noFilesMessage);
+                    noFilesMessage.style.display = 'block';
+                } else {
+                    noFilesMessage.style.display = 'none';
+                    db.files.forEach(file => {
+                        const buttonWrapper = document.createElement('div');
+                        buttonWrapper.className = 'relative flex-shrink-0 flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg';
+
+                        const button = document.createElement('button');
+                        button.textContent = `${file.title} (${file.version || 'v1.0'})`;
+                        button.dataset.id = file.id;
+                        button.className = 'file-btn flex-grow text-left px-4 py-2 border border-r-0 rounded-l-lg';
+                        if (file.id === activeFileId) button.classList.add('active');
+
+                        button.addEventListener('click', () => {
+                            activeFileId = file.id;
+                            updateFeedbackButtonState();
+                            renderContent();
+                            renderButtons();
+                            let viewedVersions = JSON.parse(localStorage.getItem(VIEWED_VERSIONS_KEY)) || {};
+                            if (file.lastUpdated && file.lastUpdated > (viewedVersions[file.id] || 0)) {
+                                if (currentUser.role !== 'admin') showVersionNotification(file);
+                            }
+                        });
+                        buttonWrapper.appendChild(button);
+
+                        if (file.changelog) {
+                            const changelogBtn = document.createElement('button');
+                            changelogBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>`;
+                            changelogBtn.title = 'ভার্সনের পরিবর্তন দেখুন';
+                            changelogBtn.className = 'p-2 hover:text-purple-500';
+                            changelogBtn.dataset.fileId = file.id;
+                            changelogBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                toggleChangelog(changelogBtn, file);
+                            });
+                            buttonWrapper.appendChild(changelogBtn);
+                        }
+
+                        if (currentUser.role === 'admin') {
+                            const codeEditBtn = document.createElement('button');
+                            codeEditBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>`;
+                            codeEditBtn.title = 'কোড এডিট করুন';
+                            codeEditBtn.className = 'admin-only p-2 hover:text-green-500';
+                            codeEditBtn.addEventListener('click', () => openCodeEditorModal(file));
+                            buttonWrapper.appendChild(codeEditBtn);
+
+                            const editBtn = document.createElement('button');
+                            editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>`;
+                            editBtn.title = 'নাম ও ভার্সন এডিট (Alt+E)';
+                            editBtn.className = 'admin-only p-2 hover:text-blue-500';
+                            editBtn.addEventListener('click', () => openEditFileModal(file));
+                            buttonWrapper.appendChild(editBtn);
+                        }
+
+                        if (currentUser.role === 'admin' || currentUser.role === 'sub-admin') {
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>`;
+                            deleteBtn.title = 'ডিলিট করুন';
+                            deleteBtn.className = 'p-2 hover:text-red-500 rounded-r-lg';
+                            deleteBtn.addEventListener('click', () => deleteFile(file.id, file.title));
+                            buttonWrapper.appendChild(deleteBtn);
+                        }
+                        buttonsContainer.appendChild(buttonWrapper);
+                    });
+                }
+            }
+
+            function toggleChangelog(button, file) { if (!changelogPopover.classList.contains('hidden') && changelogPopover.dataset.fileId === file.id.toString()) { changelogPopover.classList.add('hidden'); return; } changelogPopover.innerHTML = file.changelog.replace(/\n/g, '<br>'); changelogPopover.dataset.fileId = file.id; const rect = button.getBoundingClientRect(); changelogPopover.style.left = `${rect.left}px`; changelogPopover.style.top = `${rect.bottom + 8}px`; changelogPopover.classList.remove('hidden'); }
+            function renderContent() { const defaultMessage = '<div style="padding: 2rem; text-align: center; color: #6b7280;">প্রিভিউ দেখার জন্য একটি ফাইল সিলেক্ট করুন।</div>'; if (activeFileId) { const activeFile = db.files.find(f => f.id === activeFileId); outputFrame.srcdoc = activeFile ? activeFile.content : 'ফাইল পাওয়া যায়নি।'; } else { outputFrame.srcdoc = defaultMessage; } }
+
+            outputFrame.onload = () => {
+                try {
+                    const iFrameDoc = outputFrame.contentWindow.document;
+                    const iFrameBody = iFrameDoc.body;
+                    if (iFrameBody) {
+                        // ডিফল্টভাবে প্রিভিউ ৯০% স্কেলে দেখানোর জন্য।
+                        iFrameBody.style.zoom = 0.9;
+
+                        // জুম করা কন্টেন্টের উপর ভিত্তি করে iframe-এর উচ্চতা আরও সঠিকভাবে ঠিক করা।
+                        // getBoundingClientRect() ব্যবহার করলে জুম করা অবস্থায়ও সঠিক উচ্চতা পাওয়া যায়।
+                        const contentHeight = iFrameDoc.documentElement.getBoundingClientRect().height;
+                        outputFrame.style.height = `${Math.max(contentHeight, 900)}px`;
+                    }
+                } catch (e) {
+                    console.error("Could not access iframe content to apply zoom/resize.", e);
+                    // srcdoc ব্যবহারের কারণে এটি সাধারণত নিরাপদ, কিন্তু একটি ফলব্যাক রাখা হলো।
+                }
+            };
+
+            function deleteFile(fileId, fileTitle) { showConfirm(`আপনি কি "${fileTitle}" ফাইলটি ডিলিট করতে নিশ্চিত?`, () => { db.files = db.files.filter(f => f.id !== fileId); if (activeFileId === fileId) { activeFileId = db.files.length > 0 ? db.files[0].id : null; updateFeedbackButtonState(); } saveDatabase(); renderButtons(); renderContent(); }); }
+            uploadBtn.addEventListener('click', () => { const title = fileTitleInput.value.trim(); const file = htmlFileInput.files[0]; if (!title || !file) { alert('অনুগ্রহ করে টাইটেল এবং ফাইল উভয়ই দিন।'); return; } const reader = new FileReader(); reader.onload = (e) => { const newFile = { id: Date.now(), title, content: e.target.result, version: 'v1.0', lastUpdated: Date.now(), changelog: "প্রথম ভার্সন আপলোড করা হয়েছে।" }; db.files.push(newFile); activeFileId = newFile.id; updateFeedbackButtonState(); saveDatabase(); renderButtons(); renderContent(); fileTitleInput.value = ''; htmlFileInput.value = ''; }; reader.readAsText(file); });
+            function openEditFileModal(file) { fileToEdit = file; document.getElementById('edit-file-title').value = file.title; document.getElementById('edit-file-version').value = file.version || 'v1.0'; editFileChangelogInput.value = file.changelog || ''; editFileModal.classList.remove('hidden'); editFileChangelogInput.focus(); }
+            function openCodeEditorModal(file) { fileToEdit = file; codeEditor.value = file.content; codeEditorModal.classList.remove('hidden'); codeEditor.focus(); }
+            function saveFileChanges() { const newTitle = document.getElementById('edit-file-title').value.trim(); const newVersion = document.getElementById('edit-file-version').value.trim(); const newChangelog = editFileChangelogInput.value.trim(); const errorEl = document.getElementById('edit-file-error'); errorEl.textContent = ''; if (!newTitle || !newVersion) { errorEl.textContent = 'নাম এবং ভার্সন উভয়ই পূরণ করুন।'; return; } const fileIndex = db.files.findIndex(f => f.id === fileToEdit.id); if (fileIndex > -1) { db.files[fileIndex].title = newTitle; db.files[fileIndex].version = newVersion; db.files[fileIndex].changelog = newChangelog; db.files[fileIndex].lastUpdated = Date.now(); saveDatabase(); renderButtons(); editFileModal.classList.add('hidden'); } }
+            function saveCodeChanges() { const fileIndex = db.files.findIndex(f => f.id === fileToEdit.id); if (fileIndex > -1) { db.files[fileIndex].content = codeEditor.value; db.files[fileIndex].lastUpdated = Date.now(); saveDatabase(); if (activeFileId === fileToEdit.id) { renderContent(); } codeEditorModal.classList.add('hidden'); } }
+            function showConfirm(text, callback) { confirmModalText.textContent = text; confirmModal.classList.remove('hidden'); confirmCallback = callback; }
+            function populateAdminPanel() { changePassUserSelect.innerHTML = ''; db.users.forEach(user => { const option = document.createElement('option'); option.value = user.id; option.textContent = user.id; changePassUserSelect.appendChild(option); }); userListContainer.innerHTML = ''; const list = document.createElement('ul'); list.className = 'space-y-2'; db.users.filter(u => u.role !== 'admin').forEach(user => { const listItem = document.createElement('li'); listItem.className = 'text-sm p-2 rounded flex justify-between items-center bg-gray-100 dark:bg-gray-700'; listItem.innerHTML = `<span>${user.id} (${user.role})</span>`; const deleteUserBtn = document.createElement('button'); deleteUserBtn.textContent = 'ডিলেট'; deleteUserBtn.className = 'text-xs bg-red-500 text-white px-2 py-1 rounded'; deleteUserBtn.onclick = () => deleteUser(user.id); listItem.appendChild(deleteUserBtn); list.appendChild(listItem); }); userListContainer.appendChild(list); }
+            function deleteUser(userId) { showConfirm(`আপনি কি "${userId}" ইউজারকে ডিলেট করতে নিশ্চিত?`, () => { db.users = db.users.filter(u => u.id !== userId); saveDatabase(); populateAdminPanel(); }); }
+            function createUser() { const id = newUserIdInput.value.trim(); const pass = newUserPasswordInput.value.trim(); const role = newUserRoleInput.value; const mobile = newUserMobileInput.value.trim(); const memberCode = newUserMemberCodeInput.value.trim(); adminMsg.textContent = ''; if (!id || !pass || !mobile || !memberCode) { adminMsg.textContent = "সকল তথ্য পূরণ করুন।"; return; } if (db.users.some(u => u.id === id)) { adminMsg.textContent = "এই আইডি আগে থেকেই আছে।"; return; } db.users.push({ id, pass, role, mobile, memberCode }); saveDatabase(); adminMsg.textContent = `ইউজার "${id}" সফলভাবে তৈরি হয়েছে!`;[newUserIdInput, newUserPasswordInput, newUserMobileInput, newUserMemberCodeInput].forEach(i => i.value = ''); populateAdminPanel(); }
+            function changePassword() { const userIdToChange = changePassUserSelect.value; const newPass = changePassNewPassInput.value.trim(); adminMsg.textContent = ''; if (!newPass) { adminMsg.textContent = "নতুন পাসওয়ার্ড দিন।"; return; } const userIndex = db.users.findIndex(u => u.id === userIdToChange); if (userIndex > -1) { db.users[userIndex].pass = newPass; saveDatabase(); adminMsg.textContent = `"${userIdToChange}" এর পাসওয়ার্ড পরিবর্তন হয়েছে!`; changePassNewPassInput.value = ''; } }
+            const applyDarkMode = () => { if (localStorage.getItem('dark-mode') === 'true') { document.documentElement.classList.add('dark'); darkModeToggle.checked = true; } else { document.documentElement.classList.remove('dark'); darkModeToggle.checked = false; } };
+
+            function updateFeedbackButtonState() {
+                feedbackBtn.disabled = !activeFileId;
+            }
+
+            function populateFeedbackList() {
+                feedbackListContainer.innerHTML = '';
+                const feedbacks = db.feedback.slice().reverse();
+
+                if (feedbacks.length === 0) {
+                    feedbackListContainer.innerHTML = `<p class="text-center text-gray-500 p-4">কোনো ফিডব্যাক নেই।</p>`;
+                    return;
+                }
+
+                feedbacks.forEach(fb => {
+                    const item = document.createElement('div');
+                    item.className = `p-3 rounded-lg border ${fb.read ? 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700' : 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800'}`;
+                    const date = new Date(fb.timestamp).toLocaleString('bn-BD');
+
+                    const controlsDiv = document.createElement('div');
+                    controlsDiv.className = 'flex items-center justify-end space-x-2';
+                    controlsDiv.innerHTML = `
+                    <button title="ফিডব্যাক এডিট করুন" class="feedback-edit-btn p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                    </button>
+                    <button title="ফিডব্যাক ডিলিট করুন" class="feedback-delete-btn p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                    </button>
+                `;
+                    controlsDiv.querySelector('.feedback-edit-btn').onclick = () => openEditFeedbackModal(fb);
+                    controlsDiv.querySelector('.feedback-delete-btn').onclick = () => deleteFeedback(fb.id);
+
+                    item.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                <span><strong>ইউজার:</strong> ${fb.userId}</span> | <span>${date}</span>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">ফাইল: ${fb.fileName}</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${fb.message}</p>
+                        </div>
+                    </div>
+                `;
+                    item.firstElementChild.appendChild(controlsDiv); // Add controls to the header
+                    feedbackListContainer.appendChild(item);
+                });
+
+                let changed = false;
+                db.feedback.forEach(fb => {
+                    if (!fb.read) {
+                        fb.read = true;
+                        changed = true;
+                    }
+                });
+                if (changed) saveDatabase();
+                updateUnreadFeedbackBubble();
+            }
+
+            function openEditFeedbackModal(feedback) {
+                feedbackToEdit = feedback;
+                editFeedbackTextarea.value = feedback.message;
+                editFeedbackModal.classList.remove('hidden');
+                editFeedbackTextarea.focus();
+            }
+
+            function saveFeedbackChanges() {
+                const newMessage = editFeedbackTextarea.value.trim();
+                if (!newMessage) return;
+                const feedbackIndex = db.feedback.findIndex(fb => fb.id === feedbackToEdit.id);
+                if (feedbackIndex > -1) {
+                    db.feedback[feedbackIndex].message = newMessage;
+                    saveDatabase();
+                    populateFeedbackList();
+                    editFeedbackModal.classList.add('hidden');
+                }
+            }
+
+            function deleteFeedback(feedbackId) {
+                showConfirm('আপনি কি এই ফিডব্যাকটি ডিলিট করতে নিশ্চিত?', () => {
+                    db.feedback = db.feedback.filter(fb => fb.id !== feedbackId);
+                    saveDatabase();
+                    populateFeedbackList();
+                });
+            }
+
+            function checkForUnreadFeedback() {
+                const unreadCount = db.feedback.filter(fb => !fb.read && db.users.find(u => u.id === fb.userId)?.role === 'user').length;
+                updateUnreadFeedbackBubble();
+                if (unreadCount > 0 && !feedbackNotificationModal.classList.contains('hidden')) return;
+                if (unreadCount > 0) {
+                    feedbackNotificationText.textContent = `সাধারণ ব্যবহারকারীদের কাছ থেকে ${unreadCount} টি নতুন ফিডব্যাক এসেছে।`;
+                    feedbackNotificationModal.classList.remove('hidden');
+                }
+            }
+
+            function updateUnreadFeedbackBubble() {
+                const unreadCount = db.feedback.filter(fb => !fb.read).length;
+                if (unreadCount > 0) {
+                    unreadFeedbackBubble.textContent = unreadCount;
+                    unreadFeedbackBubble.classList.remove('hidden');
+                } else {
+                    unreadFeedbackBubble.classList.add('hidden');
+                }
+            }
+
+            loginBtn.addEventListener('click', login);
+            logoutBtn.addEventListener('click', logout);
+            darkModeToggle.addEventListener('click', () => { localStorage.setItem('dark-mode', darkModeToggle.checked); applyDarkMode(); });
+            closeAdminModalBtn.addEventListener('click', () => adminModal.classList.add('hidden'));
+            closeEditFileModalBtn.addEventListener('click', () => editFileModal.classList.add('hidden'));
+            closeCodeEditorModalBtn.addEventListener('click', () => codeEditorModal.classList.add('hidden'));
+            closeVersionNotificationBtn.addEventListener('click', () => { let viewedVersions = JSON.parse(localStorage.getItem(VIEWED_VERSIONS_KEY)) || {}; const file = db.files.find(f => f.id === activeFileId); if (file) { viewedVersions[file.id] = file.lastUpdated; localStorage.setItem(VIEWED_VERSIONS_KEY, JSON.stringify(viewedVersions)); } versionNotificationModal.classList.add('hidden'); });
+            document.body.addEventListener('click', (e) => { if (!changelogPopover.contains(e.target) && !e.target.closest('.show-changelog-btn')) { changelogPopover.classList.add('hidden'); } });
+            saveFileChangesBtn.addEventListener('click', saveFileChanges);
+            saveCodeChangesBtn.addEventListener('click', saveCodeChanges);
+            confirmModalCancelBtn.addEventListener('click', () => { confirmModal.classList.add('hidden'); confirmCallback = null; });
+            confirmModalOkBtn.addEventListener('click', () => { if (confirmCallback) { confirmCallback(); } confirmModal.classList.add('hidden'); confirmCallback = null; });
+            createUserBtn.addEventListener('click', createUser);
+            changePassBtn.addEventListener('click', changePassword);
+
+            feedbackBtn.addEventListener('click', () => {
+                if (!activeFileId) return;
+                const file = db.files.find(f => f.id === activeFileId);
+                feedbackFileName.textContent = file.title;
+                feedbackTextarea.value = '';
+                feedbackError.textContent = '';
+                feedbackModal.classList.remove('hidden');
+            });
+            closeFeedbackModalBtn.addEventListener('click', () => feedbackModal.classList.add('hidden'));
+            submitFeedbackBtn.addEventListener('click', () => {
+                const message = feedbackTextarea.value.trim();
+                if (!message) {
+                    feedbackError.textContent = 'অনুগ্রহ করে আপনার মতামত লিখুন।';
+                    return;
+                }
+                const file = db.files.find(f => f.id === activeFileId);
+                const newFeedback = { id: Date.now(), fileId: activeFileId, fileName: file.title, userId: currentUser.id, message: message, timestamp: Date.now(), read: false };
+                db.feedback.push(newFeedback);
+                saveDatabase();
+                feedbackModal.classList.add('hidden');
+                alert('আপনার মতামত সফলভাবে জমা দেওয়া হয়েছে।');
+            });
+
+            // Edit Feedback Listeners
+            closeEditFeedbackModalBtn.addEventListener('click', () => editFeedbackModal.classList.add('hidden'));
+            saveFeedbackChangesBtn.addEventListener('click', saveFeedbackChanges);
+
+            adminPanelBtn.addEventListener('click', () => {
+                populateAdminPanel();
+                populateFeedbackList();
+                updateUnreadFeedbackBubble();
+                adminModal.classList.remove('hidden');
+                adminTabUsers.click();
+            });
+            adminTabUsers.addEventListener('click', () => {
+                adminUsersContent.classList.remove('hidden');
+                adminFeedbackContent.classList.add('hidden');
+                adminTabUsers.classList.add('active');
+                adminTabFeedback.classList.remove('active');
+            });
+            adminTabFeedback.addEventListener('click', () => {
+                adminUsersContent.classList.add('hidden');
+                adminFeedbackContent.classList.remove('hidden');
+                adminTabUsers.classList.remove('active');
+                adminTabFeedback.classList.add('active');
+                populateFeedbackList();
+            });
+
+            feedbackNotificationCloseBtn.addEventListener('click', () => feedbackNotificationModal.classList.add('hidden'));
+            feedbackNotificationViewBtn.addEventListener('click', () => {
+                feedbackNotificationModal.classList.add('hidden');
+                adminPanelBtn.click();
+                adminTabFeedback.click();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                const isTyping = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+                const isLoginVisible = !loginModal.classList.contains('hidden');
+                const isAdminRecoveryVisible = !adminRecoveryModal.classList.contains('hidden');
+                const isUserRecoveryVisible = !userRecoveryModal.classList.contains('hidden');
+                const isEditFileVisible = !editFileModal.classList.contains('hidden');
+                const isCodeEditorVisible = !codeEditorModal.classList.contains('hidden');
+                const isAdminPanelVisible = !adminModal.classList.contains('hidden');
+                const isVersionNotifVisible = !versionNotificationModal.classList.contains('hidden');
+                const isConfirmVisible = !confirmModal.classList.contains('hidden');
+                const isFeedbackVisible = !feedbackModal.classList.contains('hidden');
+                const isEditFeedbackVisible = !editFeedbackModal.classList.contains('hidden');
+
+                switch (e.key) {
+                    case 'Enter':
+                        if (isLoginVisible) { e.preventDefault(); loginBtn.click(); return; }
+                        if (isFeedbackVisible || isEditFeedbackVisible) { if (!isTyping || e.target.tagName !== 'TEXTAREA') e.preventDefault(); return; }
+                        if (isTyping && e.target.id !== 'code-editor' && e.target.id !== 'new-user-id' && e.target.id !== 'new-user-password' && e.target.id !== 'new-user-mobile' && e.target.id !== 'new-user-membercode' && e.target.id !== 'change-pass-new-pass') return;
+                        e.preventDefault();
+                        if (isEditFileVisible) saveFileChangesBtn.click();
+                        else if (isCodeEditorVisible) saveCodeChangesBtn.click();
+                        else if (isVersionNotifVisible) closeVersionNotificationBtn.click();
+                        else if (isConfirmVisible) confirmModalOkBtn.click();
+                        else if (isAdminRecoveryVisible && !adminNewPassContainer.classList.contains('hidden')) adminResetPassBtn.click();
+                        else if (isAdminRecoveryVisible) adminVerifyAnswersBtn.click();
+                        else if (isUserRecoveryVisible && !userRecFoundContainer.classList.contains('hidden')) userResetPassBtn.click();
+                        else if (isUserRecoveryVisible) userVerifyInfoBtn.click();
+                        else if (isAdminPanelVisible) {
+                            if (document.activeElement.closest('div.grid')?.contains(newUserMemberCodeInput)) createUserBtn.click();
+                            if (document.activeElement.closest('div.grid')?.contains(changePassNewPassInput)) changePassBtn.click();
+                        }
+                        break;
+                    case 'Backspace':
+                        if (isFeedbackVisible || isEditFeedbackVisible) { if (!isTyping) e.preventDefault(); return; }
+                        if (isTyping) return;
+                        e.preventDefault();
+                        if (isEditFileVisible) closeEditFileModalBtn.click();
+                        else if (isCodeEditorVisible) closeCodeEditorModalBtn.click();
+                        else if (isAdminPanelVisible) closeAdminModalBtn.click();
+                        else if (isAdminRecoveryVisible) closeAdminRecoveryModalBtn.click();
+                        else if (isUserRecoveryVisible) closeUserRecoveryModalBtn.click();
+                        else if (isConfirmVisible) confirmModalCancelBtn.click();
+                        break;
+                    case 's': case 'S':
+                        if (e.altKey) { e.preventDefault(); if (isCodeEditorVisible && currentUser?.role === 'admin') { saveCodeChangesBtn.click(); } }
+                        break;
+                    case 'e': case 'E':
+                        if (e.altKey) { e.preventDefault(); if (currentUser?.role === 'admin' && activeFileId) { const file = db.files.find(f => f.id === activeFileId); if (file) openEditFileModal(file); } }
+                        break;
+                }
+            });
+
+            loadDatabase();
+            if (checkSession()) { showApp(); }
+            else { showLogin(); }
+        });
+    </script>
+    <script>
+        document.addEventListener('keydown', function (event) {
+            // 'Escape' বা 'Esc' বাটন চেক করা হচ্ছে
+            if (event.key === "Escape") {
+                // এই কমান্ডটি বর্তমান ট্যাবেই নতুন লিংক ওপেন করবে
+                window.location.href = "../aio.html";
+            }
+        });
+    </script>
+</body>
+
+</html>

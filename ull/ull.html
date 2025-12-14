@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Big Things !!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- নতুন: কালার ভ্যারিয়েবল (লাইট ও ডার্ক মোড) --- */
+        :root {
+            --bg-gradient-start: #e6fffa;
+            --bg-gradient-end: #f0f7f4;
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --surface-bg: #e6fffa;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --border-color: #cbd5e0;
+            --primary-accent: #38b2ac;
+            --secondary-accent: #2c7a7b;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --locked-bg: #e2e8f0;
+            --danger-color: #e53e3e;
+            --success-color: #38a169;
+            --warning-bg: #fefcbf;
+            --warning-border: #f6e05e;
+            --code-bg: #2d3748;
+            --code-text: #f7fafc;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a202c;
+            --bg-gradient-end: #2d3748;
+            --container-bg: rgba(45, 55, 72, 0.8);
+            --surface-bg: #2d3748;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --border-color: #4a5568;
+            --primary-accent: #4fd1c5;
+            --secondary-accent: #38b2ac;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --locked-bg: #4a5568;
+            --danger-color: #f56565;
+            --success-color: #68d391;
+            --warning-bg: #4a4a28;
+            --warning-border: #b7791f;
+            --code-bg: #1a202c;
+            --code-text: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Tiro Bangla', serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--container-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px var(--shadow-color);
+            padding: 30px 40px;
+            text-align: center;
+            margin: 40px auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            /* নতুন: গ্লাস ইফেক্ট */
+            transition: background-color 0.3s;
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f687b3, #b794f4, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        #level-tracker {
+            background-color: var(--secondary-accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .main-content,
+        .sidebar-content {
+            width: 100%;
+        }
+
+        .sidebar-content h3 {
+            color: var(--primary-accent);
+            border-bottom: 2px solid var(--primary-accent);
+            padding-bottom: 10px;
+        }
+
+        .locked-levels-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .locked-levels-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .locked-levels-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .locked-levels-list::-webkit-scrollbar-thumb {
+            background: var(--primary-accent);
+            border-radius: 10px;
+        }
+
+        .locked-list-item {
+            background-color: var(--locked-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1em;
+            color: var(--text-primary);
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .locked-list-item:hover {
+            transform: translateX(5px);
+        }
+
+        @media (min-width: 992px) {
+            .main-layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .main-content {
+                flex: 3;
+            }
+
+            .sidebar-content {
+                flex: 1;
+                position: sticky;
+                top: 20px;
+            }
+        }
+
+        .level {
+            background-color: var(--surface-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .level h2 {
+            color: var(--text-primary);
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .concept {
+            background-color: var(--container-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-accent);
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+        }
+
+        .task {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+        }
+
+        input[type="text"],
+        textarea {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Tiro Bangla', serif;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--surface-bg);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--primary-accent);
+            outline: none;
+            background-color: var(--container-bg);
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--secondary-accent), var(--primary-accent));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-family: 'Tiro Bangla', serif;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+
+        button:disabled {
+            background: var(--locked-bg);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .feedback.correct {
+            color: var(--success-color);
+        }
+
+        .feedback.incorrect {
+            color: var(--danger-color);
+        }
+
+        .hint-box {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: transparent;
+            border: 1px dashed var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hint-box .hint-text {
+            display: none;
+            margin-top: 8px;
+            color: var(--success-color);
+            text-align: left;
+        }
+
+        .level-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* --- নতুন: উপরের ডানদিকের কন্ট্রোল আইকন --- */
+        .top-right-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        #settings-icon,
+        #theme-toggle {
+            width: 50px;
+            height: 50px;
+            background-color: var(--container-bg);
+            color: var(--text-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        #settings-icon:hover,
+        #theme-toggle:hover {
+            transform: scale(1.1) rotate(20deg);
+        }
+
+        /* --- মোডাল স্টাইল (পপ-আপ) --- */
+        #level-editor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: var(--container-bg);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: var(--text-primary);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary-accent);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            margin-left: 10px;
+        }
+
+        #level-management-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #level-management-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #level-management-list li:last-child {
+            border-bottom: none;
+        }
+
+        #level-management-list .level-title {
+            font-weight: bold;
+        }
+
+        #level-management-list .actions button {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            margin-top: 0;
+        }
+
+        #level-management-list .actions .delete-btn {
+            background: var(--danger-color);
+        }
+
+        #add-new-level-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #level-form-container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-right-controls">
+        <div id="theme-toggle" title="থিম পরিবর্তন করুন">🌙</div>
+        <div id="settings-icon" title="লেভেল ম্যানেজমেন্ট">⚙️</div>
+    </div>
+
+    <div class="container">
+        <h1>জাভাস্ক্রিপ্ট অ্যাডভেঞ্চার</h1>
+        <div id="level-tracker"></div>
+
+        <div class="main-layout">
+            <div class="main-content" id="active-level-container"></div>
+            <div class="sidebar-content" id="locked-levels-sidebar"></div>
+        </div>
+
+        <div class="level-navigation">
+            <button id="prev-level-btn">পূর্ববর্তী লেভেল</button>
+            <button id="next-level-btn">পরবর্তী লেভেল</button>
+        </div>
+    </div>
+
+    <div id="level-editor-modal">
+        <div class="modal-content">
+            <div id="level-list-container">
+                <h2 id="modal-title">লেভেল ম্যানেজমেন্ট</h2>
+                <ul id="level-management-list"></ul>
+                <button type="button" id="add-new-level-btn">➕ নতুন লেভেল যোগ করুন</button>
+                <div class="modal-buttons"><button type="button" id="close-modal-list-btn">বন্ধ করুন</button></div>
+            </div>
+
+            <div id="level-form-container">
+                <h2 id="modal-form-title">নতুন লেভেল যোগ করুন</h2>
+                <input type="hidden" id="editing-level-index">
+                <div class="form-group"> <label for="level-title">লেভেলের টাইটেল</label> <input type="text"
+                        id="level-title" placeholder="যেমন: লেভেল ৬: অ্যারে মেথড"> </div>
+                <div class="form-group"> <label for="level-story">গল্প/ধারণা</label> <textarea id="level-story"
+                        rows="3"></textarea> </div>
+                <div class="form-group"> <label for="level-challenge">চ্যালেঞ্জ</label> <textarea id="level-challenge"
+                        rows="3"></textarea> </div>
+                <div class="form-group"> <label for="level-snippet">কোড স্নিপেট</label> <input type="text"
+                        id="level-snippet" placeholder="var data = {{input}};"> <small>ইনপুট বক্সের জায়গায় `{{input}}`
+                        ব্যবহার করুন।</small> </div>
+                <div class="form-group"> <label for="level-hint">হিন্ট</label> <textarea id="level-hint"
+                        rows="2"></textarea> </div>
+                <div class="form-group"> <label for="level-answer">সঠিক উত্তর</label> <input type="text"
+                        id="level-answer"> </div>
+                <div class="modal-buttons"> <button type="button" id="close-modal-form-btn">ফিরে যান</button> <button
+                        type="button" id="save-level-btn">সেভ করুন</button> </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // এই অংশটি অপরিবর্তিত আছে
+        const defaultLevels = [
+            { title: "লেভেল ১: ভ্যারিয়েবল (Variable)", story: "<p>প্রোগ্রামিং-এ <strong>ভ্যারিয়েবল (Variable)</strong> হলো একটি কন্টেইনার, যার মধ্যে আমরা ডেটা বা তথ্য জমা রাখি।</p>", challenge: "নিচের `fruitBox` নামের বাক্সে 'আম' রাখতে হলে খালি জায়গায় কী লিখতে হবে?", codeSnippet: 'var fruitBox = "{{input}}";', hint: "যেকোনো লেখাকে কোটেশন (' ') এর ভেতরে রাখতে হয়।", answer: "আম" },
+            { title: "লেভেল ২: সংখ্যা (Number)", story: "<p>বাক্সে আমরা সংখ্যাও রাখতে পারি। সংখ্যা রাখার জন্য কোটেশন (' ') দিতে হয় না।</p>", challenge: "তোমার কাছে <strong>10</strong> টি চকলেট আছে। `chocolates` বাক্সে সেই সংখ্যাটি রাখো।", codeSnippet: "var chocolates = {{input}};", hint: "যেহেতু আমরা সংখ্যা রাখছি, কোটেশন (' ') ব্যবহার করা যাবে না।", answer: "10" },
+            { title: "লেভেল ৩: লেখা (String)", story: "<p>যেকোনো লেখাকে প্রোগ্রামিং এর ভাষায় <strong>স্ট্রিং (String)</strong> বলা হয়।</p>", challenge: "`countryName` ভ্যারিয়েবলে 'বাংলাদেশ' লেখাটি স্টোর করো।", codeSnippet: 'var countryName = "{{input}}";', hint: "যেকোনো লেখাকে স্ট্রিং হিসেবে রাখতে হলে সেটিকে কোটেশন (' ') এর ভেতরে রাখতে হয়।", answer: "বাংলাদেশ" },
+            { title: "লেভেল ৪: অপারেটর (+)", story: "<p>দুটি সংখ্যা যোগ করার কাজটি `+` চিহ্ন (অপারেটর) দিয়ে করা হয়।</p>", challenge: "`apples` ও `oranges` এর যোগফল রাখতে খালি জায়গায় কোন চিহ্নটি বসবে?", codeSnippet: "var apples = 5;<br>var oranges = 3;<br>var totalFruits = apples {{input}} oranges;", hint: "দুটি সংখ্যাকে যোগ করার জন্য `+` (প্লাস) চিহ্ন ব্যবহার করা হয়।", answer: "+" },
+            { title: "লেভেল ৫: অ্যারে (Array)", story: "<p>একটি মাত্র ভ্যারিয়েবলে অনেকগুলো জিনিস রাখতে হলে <strong>অ্যারে (Array)</strong> ব্যবহার করা হয়।</p>", challenge: "`fruits` অ্যারেতে 'লিচু' যোগ করতে খালি জায়গায় কী লিখতে হবে?", codeSnippet: "var fruits = ['আম', 'জাম', {{input}}];", hint: "অ্যারের প্রতিটি আইটেমকে কমা (,) দিয়ে আলাদা করা হয়।", answer: "'লিচু'" }
+        ];
+        let levelsData = [];
+        let progress = 1;
+        let activeLevelIndex = 0;
+        const activeContainer = document.getElementById('active-level-container');
+        const sidebarContainer = document.getElementById('locked-levels-sidebar');
+        const modal = document.getElementById('level-editor-modal');
+        const levelListContainer = document.getElementById('level-list-container');
+        const levelFormContainer = document.getElementById('level-form-container');
+        function loadData() {
+            const savedData = localStorage.getItem('jsGameLevels');
+            const savedProgress = localStorage.getItem('jsGameProgress');
+            levelsData = savedData ? JSON.parse(savedData) : [...defaultLevels];
+            if (levelsData.length === 0) { levelsData = [...defaultLevels]; }
+            progress = savedProgress ? parseInt(savedProgress) : 1;
+            if (progress > levelsData.length + 1) progress = 1;
+            activeLevelIndex = Math.max(0, Math.min(progress - 1, levelsData.length - 1));
+        }
+        function saveData() {
+            localStorage.setItem('jsGameLevels', JSON.stringify(levelsData));
+            localStorage.setItem('jsGameProgress', progress.toString());
+        }
+        function renderUI() {
+            if (levelsData.length > 0) {
+                renderActiveLevel();
+                renderSidebar();
+                updateLevelTracker();
+                updateNavigationButtons();
+            } else {
+                activeContainer.innerHTML = '<h2>কোনো লেভেল পাওয়া যায়নি।</h2><p>অনুগ্রহ করে সেটিংস থেকে নতুন লেভেল যোগ করুন।</p>';
+                sidebarContainer.innerHTML = '';
+                document.getElementById('level-tracker').textContent = 'লেভেল: ০ / ০';
+                document.getElementById('prev-level-btn').disabled = true;
+                document.getElementById('next-level-btn').disabled = true;
+            }
+        }
+        function renderActiveLevel() {
+            activeContainer.innerHTML = '';
+            if (activeLevelIndex >= levelsData.length || activeLevelIndex < 0) return;
+            const levelData = levelsData[activeLevelIndex];
+            const levelWrapper = document.createElement('div');
+            levelWrapper.className = 'level';
+            levelWrapper.id = `level-div-${activeLevelIndex}`;
+            const inputHTML = `<input type="text" id="level-input-${activeLevelIndex}" placeholder="উত্তর দিন">`;
+            const finalCodeSnippet = levelData.codeSnippet.replace('{{input}}', inputHTML);
+            levelWrapper.innerHTML = `<h2>${levelData.title}</h2><div class="content"><div class="concept">${levelData.story}</div><div class="task"><h3>তোমার চ্যালেঞ্জ!</h3><p>${levelData.challenge}</p><div class="code-block">${finalCodeSnippet}</div><button onclick="checkAnswer(${activeLevelIndex})">উত্তর যাচাই করো</button><div class="feedback" id="feedback-${activeLevelIndex}"></div><div class="hint-box" onclick="toggleHint(this)"><span>💡 সাহায্য লাগবে? (ক্লিক করে দেখাও/লুকাও)</span><div class="hint-text">${levelData.hint}</div></div></div></div>`;
+            activeContainer.appendChild(levelWrapper);
+        }
+        function renderSidebar() {
+            sidebarContainer.innerHTML = '<h3>বন্ধ থাকা লেভেলসমূহ</h3><div class="locked-levels-list" id="locked-list"></div>';
+            const lockedList = document.getElementById('locked-list');
+            lockedList.innerHTML = '';
+            let foundLocked = false;
+            levelsData.forEach((levelData, index) => {
+                if (index >= progress) {
+                    const lockedItem = document.createElement('div');
+                    lockedItem.className = 'locked-list-item';
+                    lockedItem.innerHTML = `🔒 ${levelData.title}`;
+                    lockedList.appendChild(lockedItem);
+                    foundLocked = true;
+                }
+            });
+            if (!foundLocked) { lockedList.innerHTML = '<p>সবগুলো লেভেল আনলক করা হয়েছে! 🎉</p>'; }
+        }
+        function toggleHint(hintBoxElement) {
+            const hintText = hintBoxElement.querySelector('.hint-text');
+            if (hintText) { hintText.style.display = (hintText.style.display === 'block') ? 'none' : 'block'; }
+        }
+        function updateLevelTracker() {
+            const trackerElement = document.getElementById('level-tracker');
+            if (trackerElement) { trackerElement.textContent = `লেভেল: ${activeLevelIndex + 1} / ${levelsData.length}`; }
+        }
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-level-btn');
+            const nextBtn = document.getElementById('next-level-btn');
+            prevBtn.disabled = activeLevelIndex === 0;
+            nextBtn.disabled = activeLevelIndex >= progress - 1 || activeLevelIndex >= levelsData.length - 1;
+        }
+        function checkAnswer(levelIndex) {
+            if (levelIndex !== activeLevelIndex) return;
+            const userAnswer = document.getElementById(`level-input-${levelIndex}`).value.trim();
+            const correctAnswer = levelsData[levelIndex].answer;
+            const feedbackElement = document.getElementById(`feedback-${levelIndex}`);
+            if (userAnswer === correctAnswer) {
+                feedbackElement.textContent = 'দারুণ! উত্তরটি সঠিক।';
+                feedbackElement.className = 'feedback correct';
+                document.getElementById(`level-input-${levelIndex}`).disabled = true;
+                document.querySelector(`#level-div-${levelIndex} .task button`).disabled = true;
+                if (levelIndex + 1 === progress && progress < levelsData.length) {
+                    progress++;
+                    saveData();
+                    renderSidebar();
+                }
+                updateNavigationButtons();
+            } else {
+                feedbackElement.textContent = 'উহু, আবার চেষ্টা করো।';
+                feedbackElement.className = 'feedback incorrect';
+            }
+        }
+        function goToLevel(direction) {
+            if (direction === 'next' && activeLevelIndex < progress - 1) { activeLevelIndex++; }
+            else if (direction === 'prev' && activeLevelIndex > 0) { activeLevelIndex--; }
+            renderUI();
+        }
+        function renderLevelManagementList() {
+            const listEl = document.getElementById('level-management-list');
+            listEl.innerHTML = '';
+            levelsData.forEach((level, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<span class="level-title">${level.title}</span><div class="actions"><button onclick="openEditorForEdit(${index})">এডিট</button><button class="delete-btn" onclick="deleteLevel(${index})">ডিলিট</button></div>`;
+                listEl.appendChild(listItem);
+            });
+            levelListContainer.style.display = 'block';
+            levelFormContainer.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+        function openEditorForEdit(index = null) {
+            levelListContainer.style.display = 'none';
+            levelFormContainer.style.display = 'block';
+            const formTitle = document.getElementById('modal-form-title');
+            const indexInput = document.getElementById('editing-level-index');
+            if (index !== null) {
+                formTitle.textContent = `এডিট: ${levelsData[index].title}`;
+                indexInput.value = index;
+                document.getElementById('level-title').value = levelsData[index].title;
+                document.getElementById('level-story').value = levelsData[index].story;
+                document.getElementById('level-challenge').value = levelsData[index].challenge;
+                document.getElementById('level-snippet').value = levelsData[index].codeSnippet;
+                document.getElementById('level-hint').value = levelsData[index].hint;
+                document.getElementById('level-answer').value = levelsData[index].answer;
+            } else {
+                formTitle.textContent = 'নতুন লেভেল যোগ করুন';
+                indexInput.value = -1;
+                document.getElementById('level-title').value = '';
+                document.getElementById('level-story').value = '';
+                document.getElementById('level-challenge').value = '';
+                document.getElementById('level-snippet').value = 'var data = "{{input}}";';
+                document.getElementById('level-hint').value = '';
+                document.getElementById('level-answer').value = '';
+            }
+        }
+        function saveLevel() {
+            const index = parseInt(document.getElementById('editing-level-index').value);
+            const title = document.getElementById('level-title').value.trim();
+            const answer = document.getElementById('level-answer').value.trim();
+            if (!title || !answer) { alert("লেভেলের টাইটেল এবং সঠিক উত্তর অবশ্যই দিতে হবে।"); return; }
+            const levelData = {
+                title: title, story: document.getElementById('level-story').value,
+                challenge: document.getElementById('level-challenge').value,
+                codeSnippet: document.getElementById('level-snippet').value || 'var data = "{{input}}";',
+                hint: document.getElementById('level-hint').value, answer: answer
+            };
+            if (index === -1) { levelsData.push(levelData); }
+            else { levelsData[index] = levelData; }
+            saveData();
+            loadData();
+            renderUI();
+            modal.style.display = 'none';
+            alert('লেভেল সফলভাবে সেভ করা হয়েছে!');
+        }
+        function deleteLevel(index) {
+            if (confirm(`আপনি কি "${levelsData[index].title}" লেভেলটি মুছে ফেলতে নিশ্চিত?`)) {
+                levelsData.splice(index, 1);
+                saveData();
+                loadData();
+                renderUI();
+                renderLevelManagementList();
+                alert('লেভেল সফলভাবে ডিলিট করা হয়েছে!');
+            }
+        }
+
+        // --- নতুন: থিম ম্যানেজমেন্ট এবং ইভেন্ট লিসেনার ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // পেজ লোড হওয়ার সময় সেভ করা থিম লোড করুন
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            }
+
+            // থিম টগল বাটনে ক্লিক ইভেন্ট
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                let theme = 'light';
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.textContent = '☀️';
+                    theme = 'dark';
+                } else {
+                    themeToggle.textContent = '🌙';
+                }
+                localStorage.setItem('theme', theme); // থিমের পছন্দ সেভ করুন
+            });
+
+            loadData();
+            renderUI();
+
+            document.getElementById('settings-icon').addEventListener('click', renderLevelManagementList);
+            document.getElementById('close-modal-list-btn').addEventListener('click', () => { modal.style.display = 'none'; });
+            document.getElementById('close-modal-form-btn').addEventListener('click', renderLevelManagementList);
+            document.getElementById('add-new-level-btn').addEventListener('click', () => openEditorForEdit());
+            document.getElementById('save-level-btn').addEventListener('click', saveLevel);
+            document.getElementById('next-level-btn').addEventListener('click', () => goToLevel('next'));
+            document.getElementById('prev-level-btn').addEventListener('click', () => goToLevel('prev'));
+        });
+    </script>
+    <script>
+        document.addEventListener('keydown', function (event) {
+            // 'Escape' বা 'Esc' বাটন চেক করা হচ্ছে
+            if (event.key === "Escape") {
+                // এই কমান্ডটি বর্তমান ট্যাবেই নতুন লিংক ওপেন করবে
+                window.location.href = "../aio.html";
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ভোকাবুলারি ওয়েব: শব্দ শেখার প্ল্যাটফর্ম</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS অংশ */
+        :root {
+            /* ডার্ক থিমের ডিফল্ট ভেরিয়েবল */
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-color: #6200ee;
+            /* অ্যাকসেন্ট কালার */
+            --secondary-color: #03dac6;
+            --card-background: #1e1e1e;
+            --border-color: #333333;
+            --error-color: #cf6679;
+        }
+
+        /* Tiro Bangla ফন্ট ও ইউনিভার্সাল স্টাইল */
+        body {
+            font-family: 'Tiro Bangla', sans-serif;
+            /* ডিফল্ট বাংলা ফন্ট */
+            background-color: var(--background-color);
+            /* ডার্ক থিমের ব্যাকগ্রাউন্ড */
+            color: var(--text-color);
+            /* টেক্সট কালার */
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* হেডার এবং সেটিংস আইকন */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-background);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        /* গিয়ার/সেটিংস আইকন স্টাইল */
+        #settings-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary-color);
+            transition: transform 0.3s;
+        }
+
+        #settings-icon:hover {
+            transform: rotate(90deg);
+        }
+
+        /* ট্যাব নেভিগেশন স্টাইল */
+        .tabs {
+            display: flex;
+            margin-top: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-button {
+            background-color: transparent;
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-button.active {
+            background-color: var(--card-background);
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            /* সক্রিয় ট্যাবের নিচে হাইলাইট */
+        }
+
+        .tab-content {
+            padding: 20px 0;
+            display: none;
+            /* ডিফল্টভাবে সব কন্টেন্ট লুকানো থাকবে */
+        }
+
+        .tab-content.active {
+            display: block;
+            /* সক্রিয় কন্টেন্ট দেখানো হবে */
+        }
+
+        /* ফর্ম এবং ইনপুট স্টাইল */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-background);
+            color: var(--text-color);
+            font-family: 'Tiro Bangla', sans-serif;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Tiro Bangla', sans-serif;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #3700b3;
+            /* ডার্ক হোভার ইফেক্ট */
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            background-color: #4a148c;
+            /* বেগুনী রঙের সতর্কতা */
+            color: var(--text-color);
+            display: none;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        /* অগ্রগতি ট্র্যাকিং সেকশন */
+        .progress-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar-container {
+            background-color: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.5s;
+        }
+
+        /* কঠিন শব্দ তালিকা স্টাইল */
+        .difficult-words-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .difficult-words-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .difficult-words-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* ম্যানেজমেন্ট মডাল স্টাইল */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            /* ডিফল্টভাবে লুকানো থাকবে */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--background-color);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-color);
+        }
+
+        .close-button {
+            color: var(--text-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* শব্দ তালিকা স্টাইল */
+        #word-list-container {
+            margin-top: 20px;
+        }
+
+        .word-item {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr 1fr 1fr 1fr;
+            /* শব্দ, অর্থ, গ্রুপ, বিষয়, মার্কিং, একশন */
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .word-item:hover {
+            background-color: #2a2a2a;
+        }
+
+        .word-actions button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        /* প্র্যাকটিস সেকশন স্টাইল */
+        #practice-area {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #question-display {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-button {
+            padding: 10px;
+            background-color: #333;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Tiro Bangla', sans-serif;
+        }
+
+        .option-button:hover {
+            background-color: #444;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .correct {
+            background-color: #4CAF50;
+        }
+
+        /* সবুজ */
+        .incorrect {
+            background-color: #f44336;
+        }
+
+        /* লাল */
+
+        /* সেটিংস মডাল স্টাইল */
+        .settings-option {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* টগল সুইচ স্টাইল */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--secondary-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* CSV ইমপোর্ট স্টাইল */
+        #import-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>ভোকাবুলারি ওয়েব</h1> <span id="settings-icon" class="material-icons">⚙️</span>
+    </header>
+
+    <div class="container">
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="home">ড্যাশবোর্ড</button>
+            <button class="tab-button" data-tab="entry">শব্দ এন্ট্রি</button>
+            <button class="tab-button" data-tab="list">শব্দ তালিকা</button>
+            <button class="tab-button" data-tab="practice">প্র্যাকটিস ও মূল্যায়ন</button>
+            <button class="tab-button" id="manage-group-btn">গ্রুপ ম্যানেজমেন্ট</button>
+        </div>
+
+        <div id="home" class="tab-content active">
+            <h2>📊 অগ্রগতি ট্র্যাকিং</h2>
+
+            <div class="progress-section">
+                <div class="progress-card">
+                    <h3>মোট শব্দ</h3>
+                    <p id="total-words">0</p>
+                </div>
+                <div class="progress-card">
+                    <h3>দুর্বল শব্দ (মার্ক ১-২)</h3>
+                    <p id="difficult-words-count">0</p>
+                </div>
+                <div class="progress-card">
+                    <h3>অগ্রগতি বার</h3>
+                    <div class="progress-bar-container">
+                        <div id="mastery-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                    </div>
+                    <p id="mastery-percentage">0% আয়ত্ত করা হয়েছে</p>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--border-color);">
+
+            <h2>🔥 কঠিন শব্দসমূহ (মার্ক ১)</h2>
+            <ul id="difficult-words-list" class="difficult-words-list">
+            </ul>
+
+        </div>
+
+        <div id="entry" class="tab-content">
+            <h2>নতুন শব্দ যোগ করুন / সম্পাদনা করুন</h2>
+            <div id="word-entry-alert" class="alert"></div>
+
+            <form id="word-entry-form">
+                <input type="hidden" id="word-id">
+                <div class="input-group">
+                    <label for="word">শব্দ:</label>
+                    <input type="text" id="word" required>
+                    <div id="duplicate-warning" class="error-message"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="meaning">অর্থ:</label>
+                    <textarea id="meaning" required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="group">গ্রুপ (ঐচ্ছিক):</label>
+                    <select id="group-select">
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="subject">বিষয় (ঐচ্ছিক):</label>
+                    <select id="subject-select">
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submit-word-btn">শব্দ সংরক্ষণ করুন</button>
+            </form>
+        </div>
+
+        <div id="list" class="tab-content">
+            <h2>📜 সংরক্ষিত শব্দ তালিকা</h2>
+            <div id="word-list-actions" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <button id="export-excel-btn">এক্সেল এক্সপোর্ট (.CSV)</button>
+
+                <div id="import-section">
+                    <input type="file" id="import-csv-file" accept=".csv" style="width: auto;">
+                    <button id="import-excel-btn">CSV ইমপোর্ট</button>
+                </div>
+            </div>
+
+            <div id="word-list-container">
+                <div class="word-item" style="font-weight: bold; border-bottom: 2px solid var(--primary-color);">
+                    <span>শব্দ</span>
+                    <span>অর্থ</span>
+                    <span>গ্রুপ</span>
+                    <span>বিষয়</span>
+                    <span>মার্ক</span>
+                    <span>একশন</span>
+                </div>
+                <div id="word-list"></div>
+            </div>
+        </div>
+
+        <div id="practice" class="tab-content">
+            <h2>🧠 প্র্যাকটিস ও মূল্যায়ন</h2>
+            <div id="practice-settings">
+                <div class="input-group">
+                    <label for="question-count">প্রশ্নের সংখ্যা:</label>
+                    <input type="number" id="question-count" value="10" min="1">
+                </div>
+                <div class="input-group">
+                    <label for="practice-mode">প্র্যাকটিস মোড:</label>
+                    <select id="practice-mode">
+                        <option value="typing">টাইপিং/ম্যাচিং</option>
+                        <option value="mcq">মাল্টিপল চয়েস (MCQ)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="practice-order">প্রশ্নের ক্রম:</label>
+                    <select id="practice-order">
+                        <option value="random">র‍্যান্ডম</option>
+                        <option value="serial">সিরিয়াল</option>
+                    </select>
+                </div>
+                <button id="start-practice-btn">প্র্যাকটিস শুরু করুন</button>
+            </div>
+
+            <div id="practice-area" style="display: none;">
+                <p id="timer-display" style="font-weight: bold; color: var(--error-color);">সময়: 00:00</p>
+                <p id="question-info">প্রশ্ন: <span id="current-question-number">0</span> / <span
+                        id="total-question-count">0</span></p>
+                <p id="question-display">শব্দটি লোড হচ্ছে...</p>
+
+                <div id="typing-area" style="display: none; width: 100%; max-width: 400px;">
+                    <input type="text" id="typing-answer" placeholder="এখানে অর্থটি লিখুন">
+                    <button id="submit-typing-btn" style="margin-top: 10px;">উত্তর জমা দিন</button>
+                </div>
+
+                <div id="mcq-area" class="options-grid" style="display: none; width: 100%; max-width: 600px;">
+                </div>
+
+                <div id="practice-result" class="result-message"></div>
+                <button id="next-question-btn" style="display: none; margin-top: 15px;">পরবর্তী প্রশ্ন</button>
+            </div>
+
+            <div id="practice-summary" style="display: none; margin-top: 20px;">
+                <h3>ফলাফল</h3>
+                <p>সঠিক উত্তর: <span id="summary-correct">0</span></p>
+                <p>ভুল উত্তর: <span id="summary-wrong">0</span></p>
+                <button
+                    onclick="document.getElementById('practice-summary').style.display='none'; document.getElementById('practice-settings').style.display='block';">নতুন
+                    প্র্যাকটিস</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="group-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('group-modal')">&times;</span>
+            <h2>গ্রুপ এবং বিষয় ম্যানেজমেন্ট</h2>
+
+            <h3>গ্রুপ তালিকা</h3>
+            <input type="text" id="new-group-name" placeholder="নতুন গ্রুপের নাম">
+            <button onclick="addGroupOrSubject('group')">গ্রুপ যোগ করুন</button>
+            <ul id="group-list">
+            </ul>
+
+            <h3 style="margin-top: 20px;">বিষয় তালিকা</h3>
+            <input type="text" id="new-subject-name" placeholder="নতুন বিষয়ের নাম">
+            <button onclick="addGroupOrSubject('subject')">বিষয় যোগ করুন</button>
+            <ul id="subject-list">
+            </ul>
+
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('settings-modal')">&times;</span>
+            <h2>⚙️ সেটিংস</h2>
+
+            <div class="settings-option">
+                <span>ডার্ক থিম সক্রিয়</span>
+                <label class="switch">
+                    <input type="checkbox" id="dark-theme-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-option">
+                <span>ডাটা রিসেট (সকল শব্দ ডিলিট করবে)</span>
+                <button onclick="resetData()" style="background-color: var(--error-color);">ডেটা রিসেট করুন</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        // জাভাস্ক্রিপ্ট অংশ
+
+        // লোকাল স্টোরেজ থেকে ডেটা লোড করার জন্য কী
+        const STORAGE_KEY = 'vocabulary_web_data';
+
+        // প্রধান ডেটা স্ট্রাকচার
+        let data = {
+            words: [],
+            groups: ['Unknown'],
+            subjects: ['Unknown']
+        };
+
+        // --- ১. ডেটা লোডিং এবং ইনিশিয়ালাইজেশন ---
+
+        /**
+         * @function loadData
+         * লোকাল স্টোরেজ থেকে ডেটা লোড করে এবং যদি কোনো ডেটা না থাকে তবে ডিফল্ট ডেটা সেট করে।
+         */
+        function loadData() {
+            // লোকাল স্টোরেজ থেকে ডেটা আনা
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            if (storedData) {
+                // JSON স্ট্রিংকে জাভাস্ক্রিপ্ট অবজেক্টে রূপান্তর
+                data = JSON.parse(storedData);
+            } else {
+                // ডিফল্ট ডেটা সংরক্ষণ
+                saveData();
+            }
+            // ডিফল্ট গ্রুপ/সাবজেক্ট যদি মুছে ফেলা হয় তবে ফিরিয়ে আনা
+            if (!data.groups.includes('Unknown')) data.groups.push('Unknown');
+            if (!data.subjects.includes('Unknown')) data.subjects.push('Unknown');
+        }
+
+        /**
+         * @function saveData
+         * বর্তমান 'data' অবজেক্টটিকে লোকাল স্টোরেজে সংরক্ষণ করে।
+         */
+        function saveData() {
+            // জাভাস্ক্রিপ্ট অবজেক্টকে JSON স্ট্রিং এ রূপান্তর করে লোকাল স্টোরেজে সংরক্ষণ
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // --- ২. ইউটিলিটি ফাংশন ---
+
+        /**
+         * @function showTab
+         * নির্বাচিত ট্যাব কন্টেন্ট প্রদর্শন করে এবং ট্যাব বাটন হাইলাইট করে।
+         * @param {string} tabId - ট্যাবের আইডি (যেমন: 'home', 'entry')
+         */
+        function showTab(tabId) {
+            // সব ট্যাব কন্টেন্ট লুকানো
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // সব ট্যাব বাটন থেকে active ক্লাস সরানো
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // নির্বাচিত ট্যাব কন্টেন্ট এবং বাটন সক্রিয় করা
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+
+            // যদি ড্যাশবোর্ড হয়, তাহলে অগ্রগতি আপডেট করা
+            if (tabId === 'home') {
+                updateDashboard();
+            }
+            // যদি তালিকা হয়, তাহলে তালিকা লোড করা
+            if (tabId === 'list') {
+                renderWordList();
+            }
+        }
+
+        /**
+         * @function openModal
+         * মডাল উইন্ডো প্রদর্শন করে।
+         * @param {string} modalId - মডালের আইডি
+         */
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        /**
+         * @function closeModal
+         * মডাল উইন্ডো বন্ধ করে।
+         * @param {string} modalId - মডালের আইডি
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // --- ৩. ডেটা এন্ট্রি এবং ডুপ্লিকেট চেক ---
+
+        /**
+         * @function checkDuplicate
+         * রিয়েল টাইমে ডুপ্লিকেট শব্দ পরীক্ষা করে সতর্ক বার্তা প্রদর্শন করে।
+         */
+        function checkDuplicate() {
+            const wordInput = document.getElementById('word');
+            const wordId = document.getElementById('word-id').value;
+            const word = wordInput.value.trim().toLowerCase();
+            const warningElement = document.getElementById('duplicate-warning');
+
+            // বর্তমান সম্পাদিত শব্দ ছাড়া অন্য কোনো ডুপ্লিকেট আছে কিনা দেখা
+            const isDuplicate = data.words.some(w =>
+                w.word.toLowerCase() === word && w.id !== wordId
+            );
+
+            if (isDuplicate) {
+                warningElement.textContent = 'এই শব্দটি ইতিমধ্যেই সংরক্ষিত আছে!';
+            } else {
+                warningElement.textContent = '';
+            }
+        }
+
+        /**
+         * @function handleWordSubmit
+         * শব্দ সংরক্ষণ বা সম্পাদনার ফর্ম জমা দেওয়ার প্রক্রিয়া নিয়ন্ত্রণ করে।
+         * @param {Event} e - ফর্ম জমা দেওয়ার ইভেন্ট
+         */
+        function handleWordSubmit(e) {
+            e.preventDefault(); // ডিফল্ট ফর্ম সাবমিশন বন্ধ করা
+
+            const word = document.getElementById('word').value.trim();
+            const meaning = document.getElementById('meaning').value.trim();
+            const group = document.getElementById('group-select').value;
+            const subject = document.getElementById('subject-select').value;
+            const wordId = document.getElementById('word-id').value;
+            const alertElement = document.getElementById('word-entry-alert');
+
+            // ডুপ্লিকেট চেক (সম্পাদনার ক্ষেত্রে আইডি উপেক্ষা করা)
+            const isDuplicate = data.words.some(w =>
+                w.word.toLowerCase() === word.toLowerCase() && w.id !== wordId
+            );
+
+            if (isDuplicate) {
+                alertElement.textContent = 'এই শব্দটি ইতিমধ্যেই সংরক্ষিত আছে, সংরক্ষণ করা সম্ভব নয়।';
+                alertElement.style.display = 'block';
+                return;
+            }
+
+            if (wordId) {
+                // সম্পাদনার কাজ (Edit)
+                const wordIndex = data.words.findIndex(w => w.id === wordId);
+                if (wordIndex !== -1) {
+                    data.words[wordIndex].word = word;
+                    data.words[wordIndex].meaning = meaning;
+                    data.words[wordIndex].group = group;
+                    data.words[wordIndex].subject = subject;
+
+                    alertElement.textContent = 'শব্দটি সফলভাবে আপডেট করা হয়েছে।';
+                    document.getElementById('submit-word-btn').textContent = 'শব্দ সংরক্ষণ করুন';
+                }
+            } else {
+                // নতুন শব্দ যোগ করা (Add)
+                const newWord = {
+                    id: Date.now().toString(), // ইউনিক আইডি হিসেবে টাইমস্ট্যাম্প ব্যবহার
+                    word: word,
+                    meaning: meaning,
+                    group: group,
+                    subject: subject,
+                    mark: 3 // ডিফল্ট মার্ক ৩ সেট করা (১-৫ স্কেলে)
+                };
+                data.words.push(newWord);
+                alertElement.textContent = 'নতুন শব্দ সফলভাবে যোগ করা হয়েছে।';
+            }
+
+            saveData(); // ডেটা সংরক্ষণ
+            document.getElementById('word-entry-form').reset(); // ফর্ম রিসেট
+            document.getElementById('word-id').value = ''; // আইডি খালি করা
+            document.getElementById('duplicate-warning').textContent = '';
+            alertElement.style.display = 'block';
+            setTimeout(() => alertElement.style.display = 'none', 3000); // ৩ সেকেন্ড পর সতর্কতা লুকানো
+
+            // ড্রপডাউন মেনু আপডেট
+            populateGroupAndSubjectDropdowns();
+            // ড্যাশবোর্ড আপডেট
+            updateDashboard();
+        }
+
+        // --- ৪. গ্রুপ এবং সাবজেক্ট ম্যানেজমেন্ট ---
+
+        /**
+         * @function populateGroupAndSubjectDropdowns
+         * গ্রুপ এবং সাবজেক্টের ড্রপডাউন মেনুগুলো লোকাল স্টোরেজের ডেটা দিয়ে পূরণ করে।
+         */
+        function populateGroupAndSubjectDropdowns() {
+            const groupSelect = document.getElementById('group-select');
+            const subjectSelect = document.getElementById('subject-select');
+
+            // পুরাতন অপশনগুলো পরিষ্কার করা
+            groupSelect.innerHTML = '';
+            subjectSelect.innerHTML = '';
+
+            // গ্রুপ অপশন যোগ করা
+            data.groups.forEach(g => {
+                const option = document.createElement('option');
+                option.value = g;
+                option.textContent = g;
+                groupSelect.appendChild(option);
+            });
+
+            // সাবজেক্ট অপশন যোগ করা
+            data.subjects.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s;
+                option.textContent = s;
+                subjectSelect.appendChild(option);
+            });
+
+            // ম্যানেজমেন্ট মডাল তালিকা লোড করা
+            renderManagementLists();
+        }
+
+        /**
+         * @function renderManagementLists
+         * গ্রুপ এবং সাবজেক্ট ম্যানেজমেন্ট মডালে তালিকা প্রদর্শন করে।
+         */
+        function renderManagementLists() {
+            const groupList = document.getElementById('group-list');
+            const subjectList = document.getElementById('subject-list');
+            groupList.innerHTML = '';
+            subjectList.innerHTML = '';
+
+            // গ্রুপ তালিকা তৈরি
+            data.groups.forEach(g => {
+                const li = createManagementListItem(g, 'group');
+                groupList.appendChild(li);
+            });
+
+            // বিষয় তালিকা তৈরি
+            data.subjects.forEach(s => {
+                const li = createManagementListItem(s, 'subject');
+                subjectList.appendChild(li);
+            });
+        }
+
+        /**
+         * @function createManagementListItem
+         * ম্যানেজমেন্ট তালিকার জন্য একটি আইটেম (লি) তৈরি করে।
+         * @param {string} name - গ্রুপ/বিষয়ের নাম
+         * @param {string} type - 'group' অথবা 'subject'
+         * @returns {HTMLElement} - তৈরি করা তালিকা আইটেম
+         */
+        function createManagementListItem(name, type) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.padding = '5px 0';
+
+            li.innerHTML = `
+                <span id="${type}-${name}-name">${name}</span>
+                <div>
+                    <button onclick="deleteGroupOrSubject('${name}', '${type}')" 
+                        style="background-color: var(--error-color); margin-left: 10px;"
+                        ${name === 'Unknown' ? 'disabled' : ''}>
+                        ডিলিট
+                    </button>
+                </div>
+            `;
+            return li;
+        }
+
+        /**
+         * @function addGroupOrSubject
+         * নতুন গ্রুপ বা বিষয় যোগ করে।
+         * @param {string} type - 'group' অথবা 'subject'
+         */
+        function addGroupOrSubject(type) {
+            const inputId = type === 'group' ? 'new-group-name' : 'new-subject-name';
+            const name = document.getElementById(inputId).value.trim();
+
+            if (name && (type === 'group' ? !data.groups.includes(name) : !data.subjects.includes(name))) {
+                if (type === 'group') {
+                    data.groups.push(name);
+                } else {
+                    data.subjects.push(name);
+                }
+                saveData();
+                document.getElementById(inputId).value = '';
+                populateGroupAndSubjectDropdowns(); // ড্রপডাউন এবং মডাল উভয়ই আপডেট
+            } else if (name) {
+                alert(`${name} ${type === 'group' ? 'গ্রুপ' : 'বিষয়'} টি ইতিমধ্যেই বিদ্যমান।`);
+            }
+        }
+
+        /**
+         * @function deleteGroupOrSubject
+         * গ্রুপ বা বিষয় ডিলিট করে।
+         * @param {string} name - গ্রুপ/বিষয়ের নাম
+         * @param {string} type - 'group' অথবা 'subject'
+         */
+        function deleteGroupOrSubject(name, type) {
+            if (name === 'Unknown') return; // 'Unknown' ডিলিট করা যাবে না
+
+            if (confirm(`আপনি কি নিশ্চিত যে আপনি "${name}" ${type === 'group' ? 'গ্রুপ' : 'বিষয়'} টি মুছে ফেলতে চান? এই ${type === 'group' ? 'গ্রুপে' : 'বিষয়ে'} থাকা সকল শব্দ "Unknown" এ চলে যাবে।`)) {
+
+                // শব্দগুলোতে পরিবর্তন করা
+                data.words.forEach(w => {
+                    if (type === 'group' && w.group === name) {
+                        w.group = 'Unknown';
+                    }
+                    if (type === 'subject' && w.subject === name) {
+                        w.subject = 'Unknown';
+                    }
+                });
+
+                // তালিকা থেকে ডিলিট করা
+                if (type === 'group') {
+                    data.groups = data.groups.filter(g => g !== name);
+                } else {
+                    data.subjects = data.subjects.filter(s => s !== name);
+                }
+
+                saveData();
+                populateGroupAndSubjectDropdowns();
+            }
+        }
+
+
+        // --- ৫. শব্দ তালিকা (Read, Edit, Delete) ---
+
+        /**
+         * @function renderWordList
+         * সংরক্ষিত সকল শব্দকে তালিকা আকারে প্রদর্শন করে।
+         */
+        function renderWordList() {
+            const listContainer = document.getElementById('word-list');
+            listContainer.innerHTML = '';
+
+            // প্রথম অক্ষর অনুযায়ী বিন্যস্ত করা
+            const sortedWords = [...data.words].sort((a, b) => {
+                return a.word.localeCompare(b.word, 'bn', { sensitivity: 'base' });
+            });
+
+            if (sortedWords.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center;">কোনো শব্দ সংরক্ষিত নেই।</p>';
+                return;
+            }
+
+            sortedWords.forEach(wordObj => {
+                const item = document.createElement('div');
+                item.className = 'word-item';
+                // মার্কিং ডিসপ্লে ফরম্যাট সংশোধন: 4 / 5 (শুধুমাত্র ইংরেজিতে)
+                item.innerHTML = `
+                    <span>${wordObj.word}</span>
+                    <span>${wordObj.meaning}</span>
+                    <span>${wordObj.group}</span>
+                    <span>${wordObj.subject}</span>
+                    <span>${wordObj.mark} / 5</span> 
+                    <div class="word-actions">
+                        <button onclick="editWord('${wordObj.id}')">সম্পাদনা</button>
+                        <button onclick="deleteWord('${wordObj.id}')" style="background-color: var(--error-color);">ডিলিট</button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        /**
+         * @function editWord
+         * কোনো শব্দকে এডিট করার জন্য এন্ট্রি ফর্মে ডেটা লোড করে।
+         * @param {string} id - শব্দের ইউনিক আইডি
+         */
+        function editWord(id) {
+            const wordObj = data.words.find(w => w.id === id);
+            if (wordObj) {
+                // এন্ট্রি ট্যাবে নিয়ে যাওয়া
+                showTab('entry');
+
+                // ডেটা ফর্মে লোড করা
+                document.getElementById('word-id').value = wordObj.id;
+                document.getElementById('word').value = wordObj.word;
+                document.getElementById('meaning').value = wordObj.meaning;
+                document.getElementById('group-select').value = wordObj.group;
+                document.getElementById('subject-select').value = wordObj.subject;
+
+                // বাটন টেক্সট পরিবর্তন
+                document.getElementById('submit-word-btn').textContent = 'শব্দ আপডেট করুন';
+                document.getElementById('word-entry-alert').style.display = 'none';
+            }
+        }
+
+        /**
+         * @function deleteWord
+         * একটি শব্দকে লোকাল স্টোরেজ থেকে ডিলিট করে।
+         * @param {string} id - শব্দের ইউনিক আইডি
+         */
+        function deleteWord(id) {
+            if (confirm('আপনি কি নিশ্চিত যে আপনি এই শব্দটি ডিলিট করতে চান?')) {
+                data.words = data.words.filter(w => w.id !== id);
+                saveData();
+                renderWordList();
+                updateDashboard();
+            }
+        }
+
+        // --- ৬. CSV এক্সপোর্ট এবং ইমপোর্ট ---
+
+        /**
+         * @function exportToCSV
+         * সংরক্ষিত ডেটা CSV ফরম্যাটে এক্সপোর্ট করে।
+         */
+        function exportToCSV() {
+            if (data.words.length === 0) {
+                alert('এক্সপোর্ট করার জন্য কোনো শব্দ নেই।');
+                return;
+            }
+
+            // CSV হেডার তৈরি: শব্দ,অর্থ,গ্রুপ,বিষয়,মার্ক
+            let csvContent = "\uFEFFশব্দ,অর্থ,গ্রুপ,বিষয়,মার্ক\n"; // \uFEFF BOM for correct Bengali encoding in Excel
+
+            // ডেটা যোগ করা
+            data.words.forEach(wordObj => {
+                // কমা দ্বারা ডেটা আলাদা করা, এবং ডাবল কোট ও এস্কেপ ব্যবহার করা
+                const row = [
+                    `"${wordObj.word.replace(/"/g, '""')}"`,
+                    `"${wordObj.meaning.replace(/"/g, '""')}"`,
+                    `"${wordObj.group.replace(/"/g, '""')}"`,
+                    `"${wordObj.subject.replace(/"/g, '""')}"`,
+                    wordObj.mark
+                ];
+                csvContent += row.join(',') + "\n";
+            });
+
+            // Blob এবং ডাউনলোড লিংক তৈরি
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute("href", url);
+            link.setAttribute("download", "vocabulary_data.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert('শব্দ তালিকা সফলভাবে CSV ফাইল হিসেবে এক্সপোর্ট করা হয়েছে।');
+        }
+
+        /**
+         * @function importCSV
+         * ইউজার ফাইল ইনপুট থেকে CSV ডেটা ইমপোর্ট করে।
+         */
+        function importCSV() {
+            const fileInput = document.getElementById('import-csv-file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('অনুগ্রহ করে একটি CSV ফাইল নির্বাচন করুন।');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const csvText = e.target.result;
+                processCSVData(csvText);
+            };
+            reader.readAsText(file);
+        }
+
+        /**
+         * @function processCSVData
+         * CSV টেক্সটকে পার্স করে ডেটা অ্যারেতে যোগ করে।
+         * @param {string} csvText - CSV ফাইল থেকে পড়া টেক্সট ডেটা
+         */
+        function processCSVData(csvText) {
+            // CSV পার্স করার জন্য একটি সাধারণ লজিক ব্যবহার করা হচ্ছে। 
+            // হেডার লাইন (প্রথম লাইন) বাদ দেওয়া
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+
+            if (lines.length <= 1) {
+                alert('CSV ফাইলে ডেটা নেই অথবা হেডার ফরমেট সঠিক নয়। (শব্দ,অর্থ,গ্রুপ,বিষয়,মার্ক)');
+                return;
+            }
+
+            const newWords = [];
+            let importedCount = 0;
+            let skippedCount = 0;
+
+            // ডেটা লাইনগুলো প্রক্রিয়া করা (হেডার বাদ দিয়ে)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                // এখানে কমা সেপারেটর ব্যবহার করা হয়েছে। যদি টেক্সটে কমা থাকে, তবে ত্রুটি হতে পারে।
+                // ডাবল কোট এবং কমা হ্যান্ডেল করার জন্য একটি সাধারণ সমাধান ব্যবহার করা হলো।
+                const values = line.match(/(?:\"([^\"]*(?:\"\"[^\"]*)*)\")|([^\,]*)/g).filter(v => v !== ',' && v !== '');
+
+                // প্রয়োজনীয় ৪-৫টি কলাম চেক করা
+                if (values.length >= 4) {
+                    const [word, meaning, group, subject, mark] = values.map(v => v.replace(/^"|"$/g, '').replace(/""/g, '"').trim());
+
+                    // ডুপ্লিকেট চেক (শব্দের উপর ভিত্তি করে)
+                    const isDuplicate = data.words.some(w => w.word.toLowerCase() === word.toLowerCase());
+
+                    if (word && !isDuplicate) {
+                        // মার্কিং ০ বা ৬ হলে ডিফল্ট ৩ সেট করা
+                        let finalMark = parseInt(mark) || 3;
+                        if (finalMark < 1 || finalMark > 5) finalMark = 3;
+
+                        newWords.push({
+                            id: Date.now().toString() + importedCount, // ইউনিক আইডি
+                            word: word,
+                            meaning: meaning || '',
+                            group: group || 'Unknown',
+                            subject: subject || 'Unknown',
+                            mark: finalMark
+                        });
+
+                        // নতুন গ্রুপ/বিষয় থাকলে তা ডেটা অ্যারেতে যোগ করা
+                        if (group && !data.groups.includes(group)) data.groups.push(group);
+                        if (subject && !data.subjects.includes(subject)) data.subjects.push(subject);
+
+                        importedCount++;
+                    } else {
+                        skippedCount++;
+                    }
+                }
+            }
+
+            // নতুন শব্দগুলো মূল ডেটা অ্যারেতে যোগ করা
+            data.words.push(...newWords);
+            saveData();
+
+            // UI আপডেট করা
+            populateGroupAndSubjectDropdowns();
+            renderWordList();
+            updateDashboard();
+
+            alert(`CSV ইমপোর্ট সম্পন্ন! মোট ${importedCount}টি নতুন শব্দ যোগ করা হয়েছে। ডুপ্লিকেট বা ত্রুটিপূর্ণ ডেটার জন্য ${skippedCount}টি শব্দ বাদ দেওয়া হয়েছে।`);
+        }
+
+
+        // --- ৭. ড্যাশবোর্ড এবং অগ্রগতি ট্র্যাকিং ---
+
+        /**
+         * @function updateDashboard
+         * মোট শব্দ সংখ্যা, কঠিন শব্দ এবং অগ্রগতি বার আপডেট করে।
+         */
+        function updateDashboard() {
+            const total = data.words.length;
+            document.getElementById('total-words').textContent = total;
+
+            // কঠিন শব্দ (মার্ক ১ বা ২)
+            const difficultWords = data.words.filter(w => w.mark <= 2);
+            document.getElementById('difficult-words-count').textContent = difficultWords.length;
+
+            // অগ্রগতি শতাংশ (৫ মার্কের মধ্যে শব্দের গড় মার্কের শতাংশ)
+            let totalMarks = 0;
+            data.words.forEach(w => {
+                totalMarks += w.mark;
+            });
+
+            const maxPossibleMarks = total * 5;
+            let masteryPercentage = 0;
+            if (total > 0) {
+                masteryPercentage = Math.round((totalMarks / maxPossibleMarks) * 100);
+            }
+
+            document.getElementById('mastery-progress-bar').style.width = `${masteryPercentage}%`;
+            document.getElementById('mastery-percentage').textContent = `${masteryPercentage}% আয়ত্ত করা হয়েছে`;
+
+            // কঠিন শব্দ তালিকা লোড করা (মার্ক ১)
+            const hardestWords = data.words.filter(w => w.mark === 1).sort((a, b) => a.word.localeCompare(b.word, 'bn'));
+            const list = document.getElementById('difficult-words-list');
+            list.innerHTML = '';
+            if (hardestWords.length === 0) {
+                list.innerHTML = '<li>🥳 বর্তমানে কোনো কঠিন শব্দ (মার্ক ১) নেই!</li>';
+            } else {
+                hardestWords.forEach(w => {
+                    const li = document.createElement('li');
+                    li.textContent = `${w.word}: ${w.meaning.substring(0, 50)}...`;
+                    list.appendChild(li);
+                });
+            }
+        }
+
+        // --- ৮. প্র্যাকটিস সেশন এবং মূল্যায়ন ---
+
+        let practiceSession = {
+            questions: [],
+            currentQuestionIndex: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            timer: null,
+            startTime: 0
+        };
+
+        /**
+         * @function startPractice
+         * প্র্যাকটিস সেশন শুরু করে।
+         */
+        function startPractice() {
+            const count = parseInt(document.getElementById('question-count').value);
+            const mode = document.getElementById('practice-mode').value;
+            const order = document.getElementById('practice-order').value;
+
+            if (data.words.length < 4 && mode === 'mcq') {
+                alert('MCQ মোডের জন্য কমপক্ষে ৪টি শব্দ যোগ করুন।');
+                return;
+            }
+            if (data.words.length < 1) {
+                alert('প্র্যাকটিস করার জন্য কমপক্ষে ১টি শব্দ যোগ করুন।');
+                return;
+            }
+
+            // প্র্যাকটিসের জন্য শব্দ নির্বাচন
+            let wordsForPractice = [...data.words];
+
+            if (order === 'random') {
+                // র‍্যান্ডম অর্ডার
+                wordsForPractice.sort(() => 0.5 - Math.random());
+            }
+
+            // নির্বাচিত প্রশ্ন সংখ্যা অনুযায়ী শব্দ নেওয়া
+            practiceSession.questions = wordsForPractice.slice(0, Math.min(count, data.words.length));
+
+            // সেশন রিসেট
+            practiceSession.currentQuestionIndex = 0;
+            practiceSession.correctCount = 0;
+            practiceSession.wrongCount = 0;
+
+            // UI পরিবর্তন
+            document.getElementById('practice-settings').style.display = 'none';
+            document.getElementById('practice-summary').style.display = 'none';
+            document.getElementById('practice-area').style.display = 'flex';
+            document.getElementById('practice-result').style.display = 'none';
+
+            // টাইমার শুরু
+            startTimer();
+
+            // প্রথম প্রশ্ন দেখানো
+            displayNextQuestion(mode);
+        }
+
+        /**
+         * @function startTimer
+         * প্র্যাকটিস সেশনের জন্য টাইমার শুরু করে।
+         */
+        function startTimer() {
+            if (practiceSession.timer) clearInterval(practiceSession.timer); // পূর্বের টাইমার বন্ধ করা
+            practiceSession.startTime = Date.now();
+            const timerDisplay = document.getElementById('timer-display');
+
+            practiceSession.timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - practiceSession.startTime) / 1000);
+                const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const seconds = String(elapsed % 60).padStart(2, '0');
+                timerDisplay.textContent = `সময়: ${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        /**
+         * @function displayNextQuestion
+         * পরবর্তী প্রশ্ন প্রদর্শন করে।
+         * @param {string} mode - 'typing' বা 'mcq'
+         */
+        function displayNextQuestion(mode) {
+            document.getElementById('practice-result').style.display = 'none';
+            document.getElementById('next-question-btn').style.display = 'none';
+
+            if (practiceSession.currentQuestionIndex >= practiceSession.questions.length) {
+                // প্র্যাকটিস শেষ
+                endPracticeSession();
+                return;
+            }
+
+            const currentQ = practiceSession.questions[practiceSession.currentQuestionIndex];
+
+            // প্রশ্ন তথ্য আপডেট
+            document.getElementById('current-question-number').textContent = practiceSession.currentQuestionIndex + 1;
+            document.getElementById('total-question-count').textContent = practiceSession.questions.length;
+
+            // প্রশ্নের শব্দ প্রদর্শন
+            document.getElementById('question-display').textContent = `শব্দ: ${currentQ.word}`;
+
+            // মোড অনুযায়ী UI দেখানো
+            if (mode === 'typing') {
+                document.getElementById('typing-area').style.display = 'block';
+                document.getElementById('mcq-area').style.display = 'none';
+                document.getElementById('typing-answer').value = '';
+                document.getElementById('submit-typing-btn').onclick = () => checkTypingAnswer(currentQ);
+                document.getElementById('typing-answer').focus();
+            } else if (mode === 'mcq') {
+                document.getElementById('typing-area').style.display = 'none';
+                document.getElementById('mcq-area').style.display = 'grid';
+                renderMCQOptions(currentQ);
+            }
+        }
+
+        /**
+         * @function renderMCQOptions
+         * MCQ মোডের জন্য অপশন বাটন তৈরি করে।
+         * @param {Object} currentQ - বর্তমান প্রশ্ন অবজেক্ট
+         */
+        function renderMCQOptions(currentQ) {
+            const mcqArea = document.getElementById('mcq-area');
+            mcqArea.innerHTML = '';
+
+            // সঠিক উত্তর
+            const correctMeaning = currentQ.meaning;
+
+            // অন্যান্য ভুল উত্তর
+            const wrongMeanings = data.words
+                .filter(w => w.id !== currentQ.id && w.meaning !== correctMeaning) // বর্তমান শব্দ এবং একই অর্থ বাদ দেওয়া
+                .sort(() => 0.5 - Math.random()) // র‍্যান্ডম করা
+                .slice(0, 3) // ৩টি ভুল উত্তর নেওয়া
+                .map(w => w.meaning);
+
+            // অপশন তৈরি (সঠিক উত্তর + ভুল উত্তর)
+            let options = [correctMeaning, ...wrongMeanings];
+
+            // ৪টির কম শব্দ থাকলে বাকিগুলো '...' হিসেবে যোগ করা
+            while (options.length < 4) {
+                options.push('...');
+            }
+
+            // অপশনগুলো র‍্যান্ডম করা
+            options.sort(() => 0.5 - Math.random());
+
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-button';
+                btn.textContent = option.length > 50 ? option.substring(0, 50) + '...' : option;
+
+                // ইভেন্ট লিসেনার সেট করা
+                btn.onclick = () => checkMCQAnswer(currentQ, option, correctMeaning);
+                mcqArea.appendChild(btn);
+            });
+        }
+
+        /**
+         * @function checkTypingAnswer
+         * টাইপিং/ম্যাচিং মোডে ইউজারের উত্তর পরীক্ষা করে।
+         * @param {Object} currentQ - বর্তমান প্রশ্ন অবজেক্ট
+         */
+        function checkTypingAnswer(currentQ) {
+            const userAnswer = document.getElementById('typing-answer').value.trim();
+            const correctAnswer = currentQ.meaning.trim();
+
+            // উত্তর তুলনা করার সময় কেস ইনসেনসিটিভ করা হয়েছে
+            const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+            handleAnswerResult(currentQ, isCorrect);
+        }
+
+        /**
+         * @function checkMCQAnswer
+         * MCQ মোডে ইউজারের উত্তর পরীক্ষা করে।
+         * @param {Object} currentQ - বর্তমান প্রশ্ন অবজেক্ট
+         * @param {string} selectedOption - ইউজার কর্তৃক নির্বাচিত অপশন
+         * @param {string} correctAnswer - সঠিক উত্তর
+         */
+        function checkMCQAnswer(currentQ, selectedOption, correctAnswer) {
+            const isCorrect = selectedOption === correctAnswer;
+            handleAnswerResult(currentQ, isCorrect);
+
+            // MCQ বাটনগুলো ডিসেবল করা
+            document.querySelectorAll('#mcq-area button').forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === selectedOption && !isCorrect) {
+                    btn.style.backgroundColor = 'var(--error-color)'; // ভুল উত্তর লাল করা
+                } else if (btn.textContent.includes(correctAnswer) || correctAnswer.includes(btn.textContent)) {
+                    // সঠিক উত্তর সবুজ করা (সম্পূর্ণ বা আংশিক মিল)
+                    btn.style.backgroundColor = '#4CAF50';
+                }
+            });
+        }
+
+        /**
+         * @function handleAnswerResult
+         * উত্তর সঠিক বা ভুল হলে মার্কিং আপডেট করে এবং ফলাফল প্রদর্শন করে।
+         * @param {Object} wordObj - শব্দের অবজেক্ট
+         * @param {boolean} isCorrect - উত্তরটি সঠিক কিনা
+         */
+        function handleAnswerResult(wordObj, isCorrect) {
+            const resultDisplay = document.getElementById('practice-result');
+
+            // মার্কিং লজিক (স্বয়ংক্রিয় আপডেট)
+            let currentMark = wordObj.mark;
+            if (isCorrect) {
+                practiceSession.correctCount++;
+                // মার্ক ১ বাড়ানো (সর্বোচ্চ ৫)
+                wordObj.mark = Math.min(5, currentMark + 1);
+
+                resultDisplay.className = 'result-message correct';
+                resultDisplay.textContent = `সঠিক উত্তর! ✅ মার্ক বৃদ্ধি পেয়ে ${wordObj.mark} / 5 হয়েছে।`;
+
+            } else {
+                practiceSession.wrongCount++;
+                // মার্ক ১ কমানো (সর্বনিম্ন ১)
+                wordObj.mark = Math.max(1, currentMark - 1);
+
+                resultDisplay.className = 'result-message incorrect';
+                resultDisplay.textContent = `ভুল উত্তর! ❌ সঠিক উত্তর ছিল: "${wordObj.meaning}"। মার্ক হ্রাস পেয়ে ${wordObj.mark} / 5 হয়েছে।`;
+            }
+
+            // শব্দ অবজেক্ট আপডেট করা
+            saveData();
+
+            resultDisplay.style.display = 'block';
+
+            // পরবর্তী প্রশ্ন বাটনে ক্লিক করে এগোতে হবে
+            document.getElementById('submit-typing-btn').style.display = 'none';
+            document.getElementById('next-question-btn').style.display = 'block';
+
+            // পরবর্তী প্রশ্নের জন্য ইভেন্ট সেট করা
+            document.getElementById('next-question-btn').onclick = () => {
+                practiceSession.currentQuestionIndex++;
+                document.getElementById('submit-typing-btn').style.display = 'block'; // টাইপিং বাটনে পুনরায় দেখানো
+                displayNextQuestion(document.getElementById('practice-mode').value);
+            };
+        }
+
+        /**
+         * @function endPracticeSession
+         * প্র্যাকটিস সেশন শেষ করে এবং ফলাফল প্রদর্শন করে।
+         */
+        function endPracticeSession() {
+            clearInterval(practiceSession.timer); // টাইমার বন্ধ করা
+            document.getElementById('practice-area').style.display = 'none';
+            document.getElementById('practice-summary').style.display = 'block';
+
+            document.getElementById('summary-correct').textContent = practiceSession.correctCount;
+            document.getElementById('summary-wrong').textContent = practiceSession.wrongCount;
+
+            updateDashboard(); // ড্যাশবোর্ড আপডেট করা
+        }
+
+        // --- ৯. সেটিংস এবং ইভেন্ট লিসেনার ---
+
+        /**
+         * @function toggleDarkTheme
+         * ডার্ক থিম টগল করে।
+         */
+        function toggleDarkTheme() {
+            const isDark = document.getElementById('dark-theme-toggle').checked;
+            if (isDark) {
+                document.documentElement.style.setProperty('--background-color', '#121212');
+                document.documentElement.style.setProperty('--text-color', '#e0e0e0');
+                document.documentElement.style.setProperty('--card-background', '#1e1e1e');
+                document.documentElement.style.setProperty('--border-color', '#333333');
+            } else {
+                // লাইট থিম
+                document.documentElement.style.setProperty('--background-color', '#f5f5f5');
+                document.documentElement.style.setProperty('--text-color', '#121212');
+                document.documentElement.style.setProperty('--card-background', '#ffffff');
+                document.documentElement.style.setProperty('--border-color', '#dddddd');
+            }
+        }
+
+        /**
+         * @function resetData
+         * লোকাল স্টোরেজের সকল ডেটা ডিলিট করে।
+         */
+        function resetData() {
+            if (confirm('সতর্কতা! আপনি কি নিশ্চিত যে আপনি সকল সংরক্ষিত শব্দ, গ্রুপ এবং বিষয় স্থায়ীভাবে ডিলিট করতে চান? এই প্রক্রিয়াটি অপরিবর্তনীয়।')) {
+                localStorage.removeItem(STORAGE_KEY);
+                data = { words: [], groups: ['Unknown'], subjects: ['Unknown'] }; // ডিফল্ট ডেটা সেট
+                saveData();
+                location.reload(); // পেজ রিলোড করে নতুন করে শুরু করা
+            }
+        }
+
+        /**
+         * @function init
+         * অ্যাপ্লিকেশন শুরু করে।
+         */
+        function init() {
+            // ১. ডেটা লোড করা
+            loadData();
+
+            // ২. ইভেন্ট লিসেনার সেট করা
+
+            // ট্যাব নেভিগেশন
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const tabId = e.target.getAttribute('data-tab');
+                    if (tabId) {
+                        showTab(tabId);
+                    }
+                });
+            });
+
+            // সেটিংস ও গ্রুপ ম্যানেজমেন্ট মডাল ট্রিগার
+            document.getElementById('settings-icon').addEventListener('click', () => openModal('settings-modal'));
+            document.getElementById('manage-group-btn').addEventListener('click', () => {
+                renderManagementLists();
+                openModal('group-modal');
+            });
+
+            // ডার্ক থিম টগল
+            document.getElementById('dark-theme-toggle').addEventListener('change', toggleDarkTheme);
+
+            // শব্দ এন্ট্রি ফর্ম
+            document.getElementById('word-entry-form').addEventListener('submit', handleWordSubmit);
+            document.getElementById('word').addEventListener('input', checkDuplicate); // ডুপ্লিকেট চেক
+
+            // এক্সপোর্ট বাটন
+            document.getElementById('export-excel-btn').addEventListener('click', exportToCSV);
+
+            // ইমপোর্ট বাটন 
+            document.getElementById('import-excel-btn').addEventListener('click', importCSV);
+
+            // প্র্যাকটিস বাটন
+            document.getElementById('start-practice-btn').addEventListener('click', startPractice);
+
+            // ৩. Esc বাটনের মাধ্যমে রিডাইরেক্ট ফিচার (নতুন যুক্ত করা হয়েছে)
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    // যদি কোনো মডাল খোলা থাকে, তবে এটি রিডাইরেক্ট করবে না (ঐচ্ছিক নিরাপত্তা)
+                    if (document.getElementById('settings-modal').style.display === 'flex' || document.getElementById('group-modal').style.display === 'flex') {
+                        closeModal('settings-modal');
+                        closeModal('group-modal');
+                        return;
+                    }
+
+                    // টার্গেটেড ওয়েবসাইট লিংক এখানে দিন (উদাহরণ: Google)
+                    // আপনি নিচের লিংকটি পরিবর্তন করে আপনার কাঙ্ক্ষিত সাইট দিন
+                    window.location.href = "../aio.html";
+                }
+            });
+
+            // ৪. প্রাথমিক UI লোড করা
+            populateGroupAndSubjectDropdowns();
+            showTab('home'); // ডিফল্টভাবে ড্যাশবোর্ড ট্যাব দেখানো
+            updateDashboard();
+        }
+
+        // অ্যাপ্লিকেশন শুরু করা
+        window.onload = init;
+
+    </script>
+</body>
+
+</html>
