@@ -4,805 +4,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বুকমার্ক ম্যানেজার - আল্টিমেট</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>অল ইন ওয়ান</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CSS ভ্যারিয়েবল --- */
+        /* :root - এখানে আমরা কালার ভেরিয়েবল সেট করেছি যাতে থিম পরিবর্তন সহজ হয় */
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --primary-color: #00bcd4;
-            --border-color: #333333;
-            --shadow-color: rgba(0, 0, 0, 0.4);
-            --danger-color: #ff4d4f;
-            --edit-color: #ffc107;
-            --hover-bg: rgba(255, 255, 255, 0.05);
-            --active-edit-bg: rgba(255, 193, 7, 0.1);
+            --bg-color: #1a1a1a;
+            /* ডিফল্ট ডার্ক ব্যাকগ্রাউন্ড */
+            --text-color: #ffffff;
+            /* ডিফল্ট টেক্সট কালার */
+            --card-bg: #2d2d2d;
+            /* বাটনের ব্যাকগ্রাউন্ডের বেস কালার */
+            --transition: 0.3s ease;
+            /* স্মুথ এনিমেশনের সময় */
         }
 
-        .light-theme {
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
+        /* লাইট মোডের জন্য কালার ভেরিয়েবল */
+        body.light-mode {
+            --bg-color: #f0f2f5;
             --text-color: #1a1a1a;
-            --primary-color: #007bff;
-            --border-color: #dce0e4;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --hover-bg: rgba(0, 0, 0, 0.05);
-            --active-edit-bg: rgba(255, 193, 7, 0.1);
+            --card-bg: #ffffff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Tiro Bangla', serif;
+            /* সবখানে বাংলা ফন্ট */
         }
 
         body {
-            font-family: 'Tiro Bangla', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.5;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* --- হেডার --- */
-        header {
-            background-color: var(--card-bg);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px var(--shadow-color);
-        }
-
-        header h1 {
-            font-size: 1.4rem;
-            color: var(--primary-color);
-        }
-
-        header h1 i {
-            margin-right: 5px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        button {
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;
-            font-family: inherit;
-            font-weight: 600;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        button:hover {
-            opacity: 0.85;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .btn-icon {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            font-size: 1rem;
-            padding: 6px 10px;
-        }
-
-        .btn-icon.active {
-            background-color: var(--edit-color);
-            color: #121212;
-            border-color: var(--edit-color);
-        }
-
-        /* এডিট মোড অন থাকলে */
-
-        /* ছোট অ্যাকশন বাটন */
-        .btn-action {
-            background: transparent;
-            padding: 4px;
-            font-size: 0.9rem;
-            border-radius: 3px;
-        }
-
-        .btn-action:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .btn-edit {
-            color: var(--edit-color);
-        }
-
-        .btn-danger {
-            color: var(--danger-color);
-        }
-
-        /* --- মেইন কন্টেইনার --- */
-        main {
-            padding: 15px;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        /* --- গ্রুপ সেকশন --- */
-        .group-section {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            flex: 0 0 auto;
-            width: auto;
-            min-width: 200px;
-            max-width: 100%;
+            transition: background-color var(--transition), color var(--transition);
+            min-height: 100vh;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            transition: border-color 0.3s;
-        }
-
-        /* এডিট মোডে গ্রুপের বর্ডার একটু হাইলাইট হবে */
-        body.is-editing .group-section {
-            border-color: var(--edit-color);
-            border-style: dashed;
-        }
-
-        .group-header {
-            padding: 8px 12px;
-            background-color: var(--hover-bg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
             align-items: center;
+        }
+
+        /* সেটিংস/গিয়ার আইকনের স্টাইল - ফিক্সড পজিশন */
+        .settings-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
             cursor: pointer;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+            transition: transform 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-icon:hover {
+            transform: rotate(90deg);
+            /* হোভার করলে গিয়ার ঘুরবে */
+        }
+
+        /* শিরোনামের স্টাইল */
+        h1 {
+            margin-bottom: 40px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* গ্রিড লেআউট - রেসপন্সিভ গ্রিড */
+        .button-grid {
+            display: grid;
+            /* অটোমেটিক কলাম তৈরি হবে, মিনিমাম ১৫০ পিক্সেল জায়গা নিবে */
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            padding-bottom: 50px;
+        }
+
+        /* সকল বাটনের সাধারণ স্টাইল */
+        .btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            /* লিংকের আন্ডারলাইন রিমুভ */
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            outline: none;
             user-select: none;
         }
 
-        .group-header h3 {
-            font-size: 1rem;
-            font-weight: bold;
-            margin: 0;
-            white-space: nowrap;
+        /* ---- ২৫টি ভিন্ন ভিন্ন বাটন স্টাইল শুরু ---- */
+
+
+        .btn-green {
+            background: transparent;
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
         }
 
-        .toggle-icon {
-            transition: transform 0.3s;
-            font-size: 0.8rem;
-            margin-right: 5px;
+        .btn-green:hover {
+            background: #2ecc71;
+            color: #fff;
+            box-shadow: 0 0 15px #2ecc71;
         }
 
-        .group-section.collapsed .toggle-icon {
-            transform: rotate(-90deg);
+        .btn-orange {
+            background: transparent;
+            border: 2px solid #cc752e;
+            color: #cc752e;
         }
 
-        .bookmarks-wrapper {
-            padding: 10px;
-            transition: max-height 0.3s ease-out;
-            max-height: 5000px;
+        .btn-orange:hover {
+            background: #cc752e;
+            color: #fff;
+            box-shadow: 0 0 15px #cc752e;
         }
 
-        .group-section.collapsed .bookmarks-wrapper {
-            max-height: 0;
-            padding: 0;
-            border: none;
+        .btn-blue {
+            background: transparent;
+            border: 2px solid #2e8dcc;
+            color: #2e8dcc;
         }
 
-        /* --- বুকমার্ক লেআউট --- */
-        .bookmarks-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .btn-blue:hover {
+            background: #2e8dcc;
+            color: #fff;
+            box-shadow: 0 0 15px #2e8dcc;
         }
 
-        /* কার্ড ডিজাইন */
-        .bookmark-card {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px 12px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            transition: all 0.2s;
-            position: relative;
+        .btn-purple {
+            background: transparent;
+            border: 2px solid #cc2eb2;
+            color: #cc2eb2;
         }
 
-        .bookmark-card:hover {
-            border-color: var(--primary-color);
-            background-color: var(--hover-bg);
-            transform: translateY(-1px);
+        .btn-purple:hover {
+            background: #cc2eb2;
+            color: #fff;
+            box-shadow: 0 0 15px #cc2eb2;
         }
 
-        .bookmark-link {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            font-size: 0.95rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 250px;
-            display: block;
+        .btn-yellow {
+            background: transparent;
+            border: 2px solid #c1cc2e;
+            color: #c1cc2e;
         }
 
-        .bookmark-link:hover {
-            color: var(--primary-color);
+        .btn-yellow:hover {
+            background: #c1cc2e;
+            color: #fff;
+            box-shadow: 0 0 15px #c1cc2e;
         }
 
-        /* --- এডিট/ডিলিট বাটন (ম্যাজিক পার্ট) --- */
-        .card-actions {
-            display: none;
-            /* ডিফল্টভাবে লুকানো */
-            align-items: center;
-            gap: 4px;
-            padding-left: 8px;
-            border-left: 1px solid var(--border-color);
+        .btn-red {
+            background: transparent;
+            border: 2px solid #cc2e2e;
+            color: #cc2e2e;
         }
 
-        /* যখন body তে is-editing ক্লাস থাকবে, তখন বাটন দেখাবে */
-        body.is-editing .card-actions {
-            display: flex;
-            animation: fadeIn 0.3s;
+        .btn-red:hover {
+            background: #cc2e2e;
+            color: #fff;
+            box-shadow: 0 0 15px #cc2e2e;
         }
 
-        body.is-editing .bookmark-card {
-            background-color: var(--active-edit-bg);
-            /* এডিট মোডে কার্ডের রঙ হালকা চেঞ্জ */
-            padding-right: 6px;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
             }
 
-            to {
-                opacity: 1;
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
             }
         }
 
-        /* লিস্ট ভিউ */
-        .bookmarks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 300px;
-        }
-
-        .bookmarks-list .bookmark-card {
-            width: 100%;
-        }
-
-        /* --- মডাল --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 8px;
-            width: 95%;
-            max-width: 450px;
-            position: relative;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 4px;
-            font-family: inherit;
-        }
-
-        .settings-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 36px;
-            height: 20px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #555;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px;
-            width: 14px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(16px);
-        }
-
-        .group-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background: var(--bg-color);
-            margin-bottom: 6px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .group-reorder-btns {
-            display: flex;
-            gap: 2px;
-            margin-right: 10px;
-        }
-
-        .group-reorder-btns button {
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-        }
-
+        /* মোবাইল ডিভাইসের জন্য হালকা অ্যাডজাস্টমেন্ট */
         @media (max-width: 600px) {
-            main {
-                display: block;
+            h1 {
+                font-size: 1.5rem;
             }
 
-            .group-section {
-                width: 100%;
-                margin-bottom: 15px;
+            .button-grid {
+                grid-template-columns: 1fr;
             }
 
-            .bookmark-link {
-                max-width: 180px;
-            }
+            /* মোবাইলে এক কলাম */
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h1><i class="fas fa-bookmark"></i> MyFrequent</h1>
-        <div class="header-actions">
-            <button class="btn-icon" id="btn-toggle-edit" title="এডিট মোড চালু/বন্ধ করুন">
-                <i class="fas fa-pen"></i>
-            </button>
-            <button class="btn-primary" id="btn-add-new">
-                <i class="fas fa-plus"></i> যোগ
-            </button>
-            <button class="btn-icon" id="btn-settings" title="সেটিংস">
-                <i class="fas fa-cog"></i>
-            </button>
-        </div>
-    </header>
-
-    <main id="main-container"></main>
-
-    <div id="empty-state" style="text-align: center; margin-top: 50px; display: none;">
-        <h3 style="opacity: 0.7;">কোনো বুকমার্ক নেই</h3>
-        <p style="opacity: 0.5;">"যোগ" বাটনে ক্লিক করে শুরু করুন।</p>
+    <div class="settings-icon" id="theme-toggle" title="সেটিংস">
+        👌
     </div>
 
-    <div id="modal-bookmark" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h3 id="modal-title" style="margin-bottom: 20px;">বুকমার্ক যোগ করুন</h3>
-            <form id="form-bookmark">
-                <input type="hidden" id="input-id">
-                <div class="form-group">
-                    <label>শিরোনাম</label>
-                    <input type="text" id="input-title" class="form-control" required placeholder="নাম লিখুন...">
-                </div>
-                <div class="form-group">
-                    <label>লিংক (URL)</label>
-                    <input type="text" id="input-url" class="form-control" required
-                        placeholder="https://example.com বা file:///...">
-                </div>
-                <div class="form-group">
-                    <label>গ্রুপ</label>
-                    <select id="input-group-select" class="form-control" required></select>
-                </div>
-                <div class="form-group" id="group-new-input-container" style="display: none;">
-                    <label style="color: var(--primary-color);">নতুন গ্রুপের নাম:</label>
-                    <input type="text" id="input-new-group-name" class="form-control">
-                </div>
-                <div style="text-align: right; margin-top: 20px;">
-                    <button type="submit" class="btn-primary">সংরক্ষণ করুন</button>
-                </div>
-            </form>
-        </div>
+    <h1>প্রজেক্ট ⚙️ অল ইন ওয়ান</h1>
+
+
+
+
+
+
+
+    <div class="button-grid">
+        <a href="https://arnq-abd.github.io/aio/nvocab/nvocab.html" class="btn btn-green">ভোকাবুলারী</a>
+        <a href="https://arnq-abd.github.io/aio/asr/asr.html" class="btn btn-red">অটোসাজেশন রিপিট</a>
+        <a href="https://arnq-abd.github.io/aio/xyztodo/xyztodo.html" class="btn btn-orange">কাজের ধারা</a>
+        <a href="https://arnq-abd.github.io/aio/ull/ull.html" class="btn btn-blue">আনলক শিখো</a>
+        <a href="https://arnq-abd.github.io/aio/nkh/nkh.html" class="btn btn-purple">নোয়াখালী</a>
+        <a href="https://arnq-abd.github.io/aio/cnr/cnr.html" class="btn btn-yellow">অটো নূরাণী রুটিন</a>
     </div>
 
-    <div id="modal-settings" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h3 style="margin-bottom: 15px;">সেটিংস</h3>
 
-            <div class="settings-item">
-                <span>ডার্ক মোড</span>
-                <label class="switch"><input type="checkbox" id="toggle-theme"><span class="slider"></span></label>
-            </div>
-            <div class="settings-item">
-                <span>লিস্ট ভিউ</span>
-                <label class="switch"><input type="checkbox" id="toggle-view"><span class="slider"></span></label>
-            </div>
-            <div class="settings-item">
-                <span>ব্যাকআপ</span>
-                <div style="display: flex; gap: 5px;">
-                    <button id="btn-export" class="btn-primary"
-                        style="padding: 4px 8px; font-size: 0.8rem;">এক্সপোর্ট</button>
-                    <button id="btn-import-trigger" class="btn-action"
-                        style="border: 1px solid var(--border-color);">ইমপোর্ট</button>
-                    <input type="file" id="file-import" style="display: none;" accept=".json">
-                </div>
-            </div>
-
-            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 10px;">
-                <h4 style="margin-bottom: 10px; font-size: 0.95rem;">গ্রুপ ম্যানেজমেন্ট (Re-order)</h4>
-                <div id="settings-group-list" style="max-height: 200px; overflow-y: auto;"></div>
-            </div>
-
-            <div style="margin-top: 20px; text-align: center;">
-                <button onclick="window.resetAllData()"
-                    style="color: var(--danger-color); background: none; font-size: 0.8rem; text-decoration: underline;">
-                    সব রিসেট করুন
-                </button>
-            </div>
-        </div>
-    </div>
 
     <script>
-        const DB_BOOKMARKS = 'bm_data', DB_GROUPS = 'bm_groups', DB_SETTINGS = 'bm_settings';
-        const DEFAULT_GROUP_ID = 'def_uncategorized';
-        let bookmarks = [], groups = [], settings = { theme: 'dark', viewMode: 'grid', collapsed: {} };
-        let isEditMode = false; // এডিট মোড স্ট্যাটাস
+        // জাভাস্ক্রিপ্ট সেকশন
 
-        const mainContainer = document.getElementById('main-container');
-        const emptyState = document.getElementById('empty-state');
-        const modalBookmark = document.getElementById('modal-bookmark');
-        const modalSettings = document.getElementById('modal-settings');
-        const btnToggleEdit = document.getElementById('btn-toggle-edit');
+        // ১. সেটিংস আইকনটি খুঁজে বের করা
+        const themeToggleBtn = document.getElementById('theme-toggle');
 
-        window.addEventListener('DOMContentLoaded', () => {
-            loadData(); renderApp(); setupEventListeners();
-        });
+        // ২. বডি ট্যাগ খুঁজে বের করা (যেখানে ক্লাস যুক্ত হবে)
+        const bodyElement = document.body;
 
-        function loadData() {
-            try {
-                bookmarks = JSON.parse(localStorage.getItem(DB_BOOKMARKS) || '[]');
-                groups = JSON.parse(localStorage.getItem(DB_GROUPS) || `[{"id":"${DEFAULT_GROUP_ID}","name":"সাধারণ"}]`);
-                settings = { ...settings, ...JSON.parse(localStorage.getItem(DB_SETTINGS) || '{}') };
-                if (!groups.find(g => g.id === DEFAULT_GROUP_ID)) groups.unshift({ id: DEFAULT_GROUP_ID, name: 'সাধারণ' });
-                applyTheme();
-                document.getElementById('toggle-view').checked = (settings.viewMode === 'list');
-            } catch (e) { console.error(e); }
-        }
+        // ৩. আইকনে ক্লিক করলে কি হবে তার ফাংশন
+        themeToggleBtn.addEventListener('click', () => {
+            // বডি ট্যাগে 'light-mode' ক্লাসটি টগল (অন/অফ) করা হচ্ছে
+            bodyElement.classList.toggle('light-mode');
 
-        function saveData() {
-            localStorage.setItem(DB_BOOKMARKS, JSON.stringify(bookmarks));
-            localStorage.setItem(DB_GROUPS, JSON.stringify(groups));
-            localStorage.setItem(DB_SETTINGS, JSON.stringify(settings));
-        }
-
-        function renderApp() {
-            mainContainer.innerHTML = '';
-            if (bookmarks.length === 0) { emptyState.style.display = 'block'; return; }
-            emptyState.style.display = 'none';
-
-            groups.forEach(group => {
-                const groupBookmarks = bookmarks.filter(b => b.groupId === group.id);
-                if (groupBookmarks.length === 0 && group.id !== DEFAULT_GROUP_ID) return;
-
-                const section = document.createElement('div');
-                section.className = `group-section ${settings.collapsed[group.id] ? 'collapsed' : ''}`;
-
-                section.innerHTML = `
-                    <div class="group-header" onclick="window.toggleGroup('${group.id}')">
-                        <h3><i class="fas fa-chevron-down toggle-icon"></i> ${group.name} <small style="opacity:0.6; font-weight:normal;">(${groupBookmarks.length})</small></h3>
-                    </div>
-                    <div class="bookmarks-wrapper">
-                        <div class="${settings.viewMode === 'list' ? 'bookmarks-list' : 'bookmarks-grid'}">
-                            ${groupBookmarks.map(b => createCardHTML(b)).join('')}
-                        </div>
-                    </div>
-                `;
-                mainContainer.appendChild(section);
-            });
-        }
-
-        function createCardHTML(b) {
-            // target="_blank" সরানো হয়েছে যাতে বর্তমান উইন্ডোতে ওপেন হয়
-            return `
-                <div class="bookmark-card">
-                    <a href="${b.url}" class="bookmark-link" title="${b.title}\n${b.url}">
-                        ${b.title}
-                    </a>
-                    <div class="card-actions">
-                        <button class="btn-action btn-edit" onclick="window.openEditModal('${b.id}')" title="এডিট">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="btn-action btn-danger" onclick="window.deleteBookmark('${b.id}')" title="ডিলিট">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function setupEventListeners() {
-            document.getElementById('btn-add-new').onclick = openAddModal;
-            document.getElementById('btn-settings').onclick = openSettingsModal;
-
-            // এডিট মোড টগল বাটন হ্যান্ডলার
-            btnToggleEdit.onclick = () => {
-                isEditMode = !isEditMode;
-                if (isEditMode) {
-                    document.body.classList.add('is-editing');
-                    btnToggleEdit.classList.add('active');
-                } else {
-                    document.body.classList.remove('is-editing');
-                    btnToggleEdit.classList.remove('active');
-                }
-            };
-
-            document.querySelectorAll('.close-btn').forEach(b => b.onclick = (e) => e.target.closest('.modal').style.display = 'none');
-            document.getElementById('form-bookmark').onsubmit = handleBookmarkSubmit;
-
-            document.getElementById('input-group-select').onchange = (e) => {
-                const isNew = e.target.value === 'NEW';
-                document.getElementById('group-new-input-container').style.display = isNew ? 'block' : 'none';
-                if (isNew) document.getElementById('input-new-group-name').focus();
-            };
-
-            document.getElementById('toggle-theme').onchange = (e) => {
-                settings.theme = e.target.checked ? 'dark' : 'light'; applyTheme(); saveData();
-            };
-            document.getElementById('toggle-view').onchange = (e) => {
-                settings.viewMode = e.target.checked ? 'list' : 'grid'; saveData(); renderApp();
-            };
-
-            document.getElementById('btn-export').onclick = exportData;
-            document.getElementById('btn-import-trigger').onclick = () => document.getElementById('file-import').click();
-            document.getElementById('file-import').onchange = importData;
-        }
-
-        // --- Re-order Logic ---
-        window.moveGroup = (id, direction) => {
-            const index = groups.findIndex(g => g.id === id);
-            if (index === -1) return;
-            if (direction === 'up' && index > 0) {
-                [groups[index], groups[index - 1]] = [groups[index - 1], groups[index]];
-            } else if (direction === 'down' && index < groups.length - 1) {
-                [groups[index], groups[index + 1]] = [groups[index + 1], groups[index]];
-            } else return;
-            saveData(); renderApp(); renderGroupList();
-        };
-
-        // --- Global Actions ---
-        window.toggleGroup = (id) => { settings.collapsed[id] = !settings.collapsed[id]; saveData(); renderApp(); };
-
-        window.deleteBookmark = (id) => {
-            if (confirm('মুছে ফেলতে চান?')) {
-                bookmarks = bookmarks.filter(b => b.id !== id); saveData(); renderApp(); renderGroupList();
-            }
-        };
-
-        window.openEditModal = (id) => {
-            const b = bookmarks.find(x => x.id === id); if (!b) return;
-            document.getElementById('modal-title').innerText = 'এডিট বুকমার্ক';
-            document.getElementById('input-id').value = b.id;
-            document.getElementById('input-title').value = b.title;
-            document.getElementById('input-url').value = b.url;
-            populateGroupSelect(b.groupId);
-            document.getElementById('group-new-input-container').style.display = 'none';
-            modalBookmark.style.display = 'flex';
-        };
-
-        window.resetAllData = () => { if (confirm("সব ডেটা মুছে যাবে!")) { localStorage.clear(); location.reload(); } };
-
-        window.renameGroup = (id) => {
-            const g = groups.find(x => x.id === id);
-            const name = prompt("নতুন নাম:", g.name);
-            if (name && name.trim()) { g.name = name.trim(); saveData(); renderApp(); renderGroupList(); }
-        };
-
-        window.deleteGroup = (id) => {
-            if (confirm("গ্রুপটি ডিলিট করতে চান?")) {
-                bookmarks.forEach(b => { if (b.groupId === id) b.groupId = DEFAULT_GROUP_ID; });
-                groups = groups.filter(g => g.id !== id);
-                saveData(); renderApp(); renderGroupList();
-            }
-        };
-
-        function openAddModal() {
-            document.getElementById('form-bookmark').reset();
-            document.getElementById('input-id').value = '';
-            document.getElementById('modal-title').innerText = 'নতুন বুকমার্ক';
-            document.getElementById('group-new-input-container').style.display = 'none';
-            populateGroupSelect();
-            modalBookmark.style.display = 'flex';
-        }
-
-        function populateGroupSelect(selId) {
-            const sel = document.getElementById('input-group-select');
-            sel.innerHTML = `<option value="NEW" style="color:var(--primary-color); font-weight:bold;">+ নতুন গ্রুপ</option>`;
-            groups.forEach(g => {
-                sel.innerHTML += `<option value="${g.id}" ${selId === g.id ? 'selected' : ''}>${g.name}</option>`;
-            });
-            if (!selId) sel.value = DEFAULT_GROUP_ID;
-        }
-
-        function handleBookmarkSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('input-id').value;
-            const title = document.getElementById('input-title').value;
-            let url = document.getElementById('input-url').value.trim();
-            let gId = document.getElementById('input-group-select').value;
-            const newGName = document.getElementById('input-new-group-name').value.trim();
-
-            if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)) url = 'https://' + url;
-
-            if (gId === 'NEW') {
-                if (!newGName) return alert("গ্রুপের নাম দিন");
-                const exist = groups.find(g => g.name.toLowerCase() === newGName.toLowerCase());
-                if (exist) gId = exist.id;
-                else { gId = 'g_' + Date.now(); groups.push({ id: gId, name: newGName }); }
-            }
-
-            if (id) {
-                const idx = bookmarks.findIndex(b => b.id === id);
-                if (idx !== -1) bookmarks[idx] = { id, title, url, groupId: gId };
+            // কনসোলে চেক করার জন্য মেসেজ (ডেভেলপারদের জন্য)
+            if (bodyElement.classList.contains('light-mode')) {
+                console.log("লাইট মোড চালু হয়েছে");
             } else {
-                bookmarks.push({ id: 'b_' + Date.now(), title, url, groupId: gId });
+                console.log("ডার্ক মোড চালু হয়েছে");
             }
-            saveData(); renderApp(); modalBookmark.style.display = 'none';
-        }
-
-        function openSettingsModal() {
-            renderGroupList();
-            document.getElementById('toggle-theme').checked = (settings.theme === 'dark');
-            modalSettings.style.display = 'flex';
-        }
-
-        function renderGroupList() {
-            const list = document.getElementById('settings-group-list');
-            list.innerHTML = '';
-            groups.forEach((g, index) => {
-                const count = bookmarks.filter(b => b.groupId === g.id).length;
-                const isFirst = index === 0;
-                const isLast = index === groups.length - 1;
-                list.innerHTML += `
-                    <div class="group-list-item">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <div class="group-reorder-btns">
-                                <button onclick="window.moveGroup('${g.id}', 'up')" ${isFirst ? 'disabled style="opacity:0.3"' : ''} title="উপরে">
-                                    <i class="fas fa-chevron-up"></i>
-                                </button>
-                                <button onclick="window.moveGroup('${g.id}', 'down')" ${isLast ? 'disabled style="opacity:0.3"' : ''} title="নিচে">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
-                            <span>${g.name} (${count})</span>
-                        </div>
-                        ${g.id !== DEFAULT_GROUP_ID ? `
-                        <div>
-                            <button onclick="window.renameGroup('${g.id}')" class="btn-action btn-edit"><i class="fas fa-pen"></i></button>
-                            <button onclick="window.deleteGroup('${g.id}')" class="btn-action btn-danger"><i class="fas fa-trash"></i></button>
-                        </div>` : '<small>ডিফল্ট</small>'}
-                    </div>`;
-            });
-        }
-
-        function applyTheme() {
-            document.body.className = settings.theme === 'light' ? 'light-theme' : '';
-        }
-
-        function exportData() {
-            const blob = new Blob([JSON.stringify({ bookmarks, groups, settings }, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); a.download = 'bookmarks.json'; a.click();
-        }
-
-        function importData(e) {
-            const f = e.target.files[0]; if (!f) return;
-            const r = new FileReader();
-            r.onload = (evt) => {
-                try {
-                    const d = JSON.parse(evt.target.result);
-                    if (d.bookmarks && d.groups && confirm("মার্জ করতে চান?")) {
-                        bookmarks = [...bookmarks, ...d.bookmarks];
-                        d.groups.forEach(ng => { if (!groups.find(g => g.id === ng.id)) groups.push(ng); });
-                        saveData(); location.reload();
-                    }
-                } catch (err) { alert("ভুল ফাইল!"); }
-            };
-            r.readAsText(f);
-        }
+        });
     </script>
 </body>
-
 
 </html>
